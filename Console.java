@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.Scanner;
 
 /*
- * In the original project, this was written by Chase Vaughn
+ * In the original project, this was written by Chase Vaugn
  */
 
 public class Console {
