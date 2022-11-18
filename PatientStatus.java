@@ -1,7 +1,7 @@
 package ver1;
 
 /*
- * In the original project, this was written by Chase Vaughn
+ * In the original project, this was written by Chase Vaugn
  */
 
 public enum PatientStatus {
