@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 /*
- * In the original project, this was written by Chase Vaughn
+ * In the original project, this was written by Chase Vaugn
  */
 
 public final class Utils {
