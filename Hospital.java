@@ -6,7 +6,7 @@ import java.util.List;
 
 /*
  * In the original project, this was written by Lucas Keasbey
- * and Chase Vaughn Collaboratively
+ * and Chase Vaugn Collaboratively
  */
 
 public class Hospital {
