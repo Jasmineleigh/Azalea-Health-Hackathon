@@ -1,0 +1,83 @@
+.root{
+	-fx-background-color: #ffffff;
+	-fx-padding: 5px, 5px, 5px, 5px;
+	-fx-spacing:15px;
+	-fx-hgap: 5px;
+	-fx-vgap: 5px;
+}
+
+.label{
+	-fx-font-family:Verdana;
+	-fx-font-size:12px;
+}
+
+.grid1 {
+	-fx-padding: 5px, 5px, 5px, 5px;
+	-fx-spacing:15px;
+}
+
+.h_box {
+	-fx-padding: 5px;
+	-fx-spacing: 15px;
+	-fx-text-fill: #0090c0;
+}
+/*
+ * #0077c0 - deep blue
+ * #09f - light blue
+ * #cf2e2e - deep red
+ * #23A455 - green
+ */
+.buttons_box {
+	-fx-border-style:solid;
+	-fx-border-color:#0077c0;
+	-fx-border-width:2px;
+	-fx-background-color:#cce4f2;
+	-fx-spacing: 5px;
+	-fx-padding: 5px;
+}
+
+.available_room_button{
+	-fx-border-style:solid;
+	-fx-border-color:#0b331a;
+	-fx-border-width:2px;
+	-fx-background-color:#23A455;
+	-fx-text-fill:#e1f9ea;
+	-fx-font-family:Verdana;
+	-fx-min-height:125px;
+	-fx-min-width:125px;
+
+}
+
+.unavailable_room_button{
+	-fx-border-style:solid;
+	-fx-border-color:#7a1a25;
+	-fx-border-width:2px;
+	-fx-background-color:#d32f42;
+	-fx-text-fill:#f2c1c6;
+	-fx-font-family:Verdana;
+}
+
+.list{
+	-fx-background-color:#cce4f2;
+	-fx-border-style:solid;
+	-fx-border-color:#0077c0;
+	-fx-border-width:2px;
+	-fx-padding: 5px;
+}
+
+.search_button{
+	-fx-background-color: #cce4f2;
+	-fx-background-image:url("search.jpg");
+	-fx-border-style:solid;
+	-fx-border-color:#0077c0;
+	-fx-border-width:2px;
+
+}
+
+.filter_button{
+	-fx-background-color: #cce4f2;
+	-fx-background-image:"filter.jpg";
+	-fx-border-style:solid;
+	-fx-border-color:#0077c0;
+	-fx-border-width:2px;
+}
