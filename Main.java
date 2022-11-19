@@ -16,6 +16,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -30,8 +32,8 @@ public class Main extends Application {
     
     // search bar variables
     protected TextField txfSearchPatient;
-    protected Button btnSearch;
-    protected Button filter;
+    protected Button btnSearch, btnFilter;
+    protected int numSearchBarClicks = 0;
     
     // data entered by patient
     protected TextField txfFirstName, txfLastName, txfAge, txfBirthdate, txfAddress;
@@ -215,13 +217,73 @@ public class Main extends Application {
         lvwCheckedout.setPrefHeight(600);
         lvwCheckedout.setPrefWidth(300);
         
-        txfSearchPatient = new TextField();
+        HBox hBoxSearch = new HBox();
+        hBoxSearch.setSpacing(3);
         
+        HBox hBoxSearchButtons = new HBox();
+        
+        txfSearchPatient = new TextField("i.e. jane doe");
+        txfSearchPatient.setPrefHeight(28);
+        txfSearchPatient.setPrefWidth(250);
+        
+        txfSearchPatient.setOnMouseExited(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent arg0) {
+			
+	        	numSearchBarClicks = 0;
+	        	txfSearchPatient.setText("i.e. jane doe");
+			
+			}
+        	
+        });
+        
+        txfSearchPatient.setOnMouseClicked(new EventHandler<MouseEvent>(){
+
+			@Override
+			public void handle(MouseEvent arg0) {
+				if(numSearchBarClicks == 0) {
+					txfSearchPatient.clear();
+					numSearchBarClicks++;
+				}
+
+			}
+        	
+        });
+        
+        txfSearchPatient.setOnKeyTyped(new EventHandler<KeyEvent> () {
+
+			@Override
+			public void handle(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				lvwCheckedout.getItems();
+				String search = txfSearchPatient.getText();
+				List<Patient> found = azaleaHealth.getPatientsWithTheseLetters(search);
+				
+				lvwCheckedout.getItems().clear();
+				
+				for(Patient p:found) {
+					lvwCheckedout.getItems().add(p);
+				}
+			}
+        	
+        });
+
+        
+        btnSearch = new Button("   ");
+        btnSearch.getStyleClass().add("search_button");
+        
+        btnFilter = new Button("   ");
+        btnFilter.getStyleClass().add("filter_button");
+        
+        hBoxSearchButtons.getChildren().addAll(btnFilter, btnSearch);
+        
+        hBoxSearch.getChildren().addAll(txfSearchPatient, hBoxSearchButtons);
        
 
         VBox display = new VBox();
         display.getStyleClass().add("list");
-        display.getChildren().addAll(lvwCheckedout);
+        display.getChildren().addAll(hBoxSearch,lvwCheckedout);
 
         return display;
     }
