@@ -1,5 +1,8 @@
 package ver1;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +19,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -137,6 +142,20 @@ public class Main extends Application {
     	
     	btnRoom1 = new Button("Room 100");
     	btnRoom1.getStyleClass().add("available_room_button");
+    	btnRoom1.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				try {
+					buildRoomDataDisplay(btnRoom1.getText());
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+    		
+    	});
     	
     	btnRoom2 = new Button("Room 101");
     	btnRoom2.getStyleClass().add("available_room_button");
@@ -675,7 +694,7 @@ public class Main extends Application {
     	public void handle (ActionEvent event) {
     		try {
 				Stage primaryStage = new Stage();
-			    Pane grdRootPane = buildPreparationApplicationDisplay(r.getPatient());
+			    Pane grdRootPane = buildRoomDataDisplay();
 			   
 			    btnSubmit.setOnAction(new EventHandler<ActionEvent>() {
 		            @Override
@@ -714,11 +733,66 @@ public class Main extends Application {
     	}
     }
     
-    private void buildRoomInformationDisplay(Room r) {
-    	
-    }
 
-    public class CreateHoldEventHandler implements EventHandler<ActionEvent> {
+    public void buildRoomDataDisplay(String number) throws FileNotFoundException {
+		int roomNumber = Integer.parseInt(number.substring(number.indexOf("1"),number.length()));
+		Pane root = new Pane();
+		GridPane col1 = new GridPane();
+		GridPane col2 = new GridPane();
+		
+		VBox vBoxBody = new VBox();
+		InputStream stream = new FileInputStream("src\\ver1\\female.jpg");
+		Image imgFemale = new Image(stream);
+
+		ImageView imgvwBody = new ImageView();
+		imgvwBody.setImage(imgFemale);
+		vBoxBody.getChildren().add(imgvwBody);
+		col1.getChildren().add(vBoxBody);
+		
+		Label lblStatus;
+		Label lblName;
+		Label lblAge;
+		Label lblDOB;
+		Label lblRace;
+		Label lblSex;
+		Label lblAddress;
+		Label lblState;
+		Label lblZip;
+		
+		Label lblHeight;
+		Label lblWeight;
+		Label lblBPM;
+		Label lblBloodPressure;
+		
+		Label lblIllnesses;
+		
+		Label lblNotes;
+		
+		
+		
+		root.getChildren().add(col1);
+		
+		
+		try {
+			Stage primaryStage = new Stage();
+		    Pane grdRootPane = root;
+
+		    
+		    Scene scene = new Scene(grdRootPane, 600, 400);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			primaryStage.setScene(scene);
+			primaryStage.setTitle("Room");
+			primaryStage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+	}
+
+	public class CreateHoldEventHandler implements EventHandler<ActionEvent> {
 
         @Override
         public void handle(ActionEvent arg0) {
