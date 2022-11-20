@@ -36,6 +36,11 @@
 	-fx-padding: 5px;
 }
 
+.new-patient-application{
+	-fx-background-color:#0077c0;
+	/*-fx-text-fill:#ffffff;*/
+}
+
 .available_room_button{
 	-fx-border-style:solid;
 	-fx-border-color:#0b331a;
@@ -63,20 +68,34 @@
 	-fx-border-color:#0077c0;
 	-fx-border-width:2px;
 	-fx-padding: 5px;
+	-fx-spacing:3px;
 }
 
 .search_button{
 	-fx-background-color: #cce4f2;
 	-fx-background-image:url("search.jpg");
+	-fx-background-repeat:no-repeat ;
 	-fx-border-style:solid;
 	-fx-border-color:#0077c0;
 	-fx-border-width:2px;
+	-fx-background-size:28px;
 
 }
 
 .filter_button{
 	-fx-background-color: #cce4f2;
-	-fx-background-image:"filter.jpg";
+	-fx-background-image:url("filter.jpg");
+	-fx-background-repeat:no-repeat ;
+	-fx-background-size:28px;
+	-fx-border-style:solid;
+	-fx-border-color:#0077c0;
+	-fx-border-width:2px;
+}
+
+.female_patient{
+	-fx-background-color: #cce4f2;
+	-fx-background-image:url("female.jpg");
+	-fx-background-repeat:no-repeat ;
 	-fx-border-style:solid;
 	-fx-border-color:#0077c0;
 	-fx-border-width:2px;
