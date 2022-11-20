@@ -6,7 +6,7 @@ import java.util.Date;
 
 /*
  * In the original project, this was written by Lucas Keasbey
- * and Chase Vaugn Collaboratively
+ * and Chase Vaughn Collaboratively
  */
 
 public class Patient implements Comparable<Patient> {
@@ -16,11 +16,14 @@ public class Patient implements Comparable<Patient> {
     // variables given by patient (added by jlmerritt)
     protected String firstName = "Jane/ John";
     protected String lastName = "Doe";
-    protected String address;
-    protected String phoneNumber;
+    protected String address, city, state;
+    protected String phone;
     protected int age;
     protected LocalDate birthdate;
-    protected String race;
+    protected String sex, maritalStatus, race;
+    protected String SSN;
+    protected EmergencyContact emergContact;
+    
     
     // variables set by doctor or nurse (added by jlmerritt)
     protected double height = -1;
@@ -44,15 +47,22 @@ public class Patient implements Comparable<Patient> {
     }
     
     public Patient(int id, String firstName, String lastName, 
-    		String address, int age, LocalDate birthdate) {
+    		String address, String city, String state, int age, 
+    		LocalDate birthdate, String SSN, String sex) {
+    	
     	this(id);
     	this.firstName = firstName;
     	this.lastName = lastName;
     	this.address = address;
+    	this.city = city;
+    	this.state = state;
     	this.age = age;
     	this.birthdate = birthdate;
+    	this.SSN = SSN;
+    	this.sex = sex;
+    	
 //    	this.race = race;
-    	hasBiographical = true;
+//    	hasBiographical = true;
     }
 
     public String getFirstName() {
@@ -89,6 +99,58 @@ public class Patient implements Comparable<Patient> {
 
 	public LocalDate getBirthdate() {
 		return birthdate;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getSex() {
+		return sex;
+	}
+
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
+
+	public String getMaritalStatus() {
+		return maritalStatus;
+	}
+
+	public void setMaritalStatus(String maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
+
+	public EmergencyContact getEmergContact() {
+		return emergContact;
+	}
+
+	public void setEmergContact(EmergencyContact emergContact) {
+		this.emergContact = emergContact;
+	}
+
+	public void setRace(String race) {
+		this.race = race;
 	}
 
 	public void setBirthdate(LocalDate birthdate) {
@@ -173,7 +235,7 @@ public class Patient implements Comparable<Patient> {
     public String getPatientData() {
     	String data = "";
     	
-    	if(hasBiographical) {
+    	if(!firstName.equals("Jane/ John")) {
     		data += String.format("Name: %s %s, ID: %d\nAge: %d, Birthdate: %s, Race: %s"
     				+ "\nAddress: %s\n", firstName, lastName, id, age, birthdate.toString(), race, address);
     		
