@@ -47,6 +47,7 @@ public class Main extends Application {
     protected TextField txfSearchPatient;
     protected Button btnSearch, btnFilter;
     protected int numSearchBarClicks = 0;
+    protected int numNewPatients = 0;
     
     // data entered by patient
     protected TextField txfFirstName, txfLastName, txfAge, txfBirthdate, txfAddress,
@@ -72,6 +73,19 @@ public class Main extends Application {
     // update
     protected Button btnRoom1, btnRoom2, btnRoom3, btnRoom4, btnRoom5, btnRoom6;
 
+	protected HBox hBoxSex = new HBox();
+	protected RadioButton rdFemale = new RadioButton("Female");
+	protected RadioButton rdMale = new RadioButton("Male");
+	protected RadioButton rdPreferNot = new RadioButton("Prefer Not To Say");
+	protected String sex = null;
+	
+	protected HBox hBoxMarital = new HBox();
+	protected RadioButton rdWidow = new RadioButton("Widow");
+	protected RadioButton rdDivorced = new RadioButton("Divorced");
+	protected RadioButton rdMarried = new RadioButton("Married");
+	protected RadioButton rdSingle = new RadioButton("Single");
+	protected String marital = null;
+    
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -433,8 +447,7 @@ public class Main extends Application {
 
     }
     
-    public Patient showApplicationScreen() {
-    	Patient newPatient = null;
+    public void showApplicationScreen() {
     	
 		try {
 			Stage primaryStage = new Stage();
@@ -444,19 +457,43 @@ public class Main extends Application {
 		    btnSubmit.setOnAction(new EventHandler<ActionEvent>() {
 	            @Override
 	            public void handle(ActionEvent event) {
-	            	
-	            	int patientID = azaleaHealth.addPatient();
-
-	            	azaleaHealth.getPatient(patientID).setFirstName(txfFirstName.getText());
-	            	azaleaHealth.getPatient(patientID).setLastName(txfLastName.getText());
-	            	azaleaHealth.getPatient(patientID).setAddress(txfAddress.getText());
-	            	azaleaHealth.getPatient(patientID).setAge(Integer.parseInt(txfAge.getText()));
-	            	azaleaHealth.getPatient(patientID).setBirthdate(LocalDate.parse(txfBirthdate.getText()));
-	          
-	                lvwWaitingPatients.getItems().add(azaleaHealth.getPatient(patientID));
-	                primaryStage.close();
-	                System.out.println(azaleaHealth.getPatient(patientID).getPatientData());
+	            	if(primaryDataMissing()) {
+	            		showMissingDataScreen();
+	            	}else {
+		            	int patientID = azaleaHealth.addPatient();
+	
+		            	azaleaHealth.getPatient(patientID).setFirstName(txfFirstName.getText());
+		            	azaleaHealth.getPatient(patientID).setLastName(txfLastName.getText());
+		            	azaleaHealth.getPatient(patientID).setAddress(txfAddress.getText());
+		            	azaleaHealth.getPatient(patientID).setCity(txfCity.getText());
+		            	azaleaHealth.getPatient(patientID).setState(txfState.getText());
+		            	azaleaHealth.getPatient(patientID).setAge(Integer.parseInt(txfAge.getText()));
+		            	azaleaHealth.getPatient(patientID).setBirthdate(LocalDate.parse(txfBirthdate.getText()));
+		            	azaleaHealth.getPatient(patientID).setPhone(txfPatientPhone.getText());
+		            	azaleaHealth.getPatient(patientID).setSex(sex);
+		            	azaleaHealth.getPatient(patientID).setMaritalStatus(marital);
+		            	azaleaHealth.getPatient(patientID).setSSN(txfSSN.getText());
+		            	
+		            	if(!txfEmergName.getText().isEmpty() && 
+		            		!txfEmergPhone.getText().isEmpty() && 
+		            		!txfEmergRelationship.getText().isEmpty()) {
+		            		
+		            		EmergencyContact eC = new EmergencyContact(txfEmergName.getText(), 
+		            													txfEmergPhone.getText(),
+		            													txfEmergRelationship.getText());
+		            		azaleaHealth.getPatient(patientID).setEmergContact(eC);
+		            		
+		            	}
+		            	 
+		            	
+		                lvwWaitingPatients.getItems().add(azaleaHealth.getPatient(patientID));
+		                primaryStage.close();
+		                System.out.println(azaleaHealth.getPatient(patientID).getPatientData());
+	            
+	            	}
 	            }
+
+			
 	        });
 		    
 		    
@@ -476,8 +513,78 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 		
-		return newPatient;
     }
+    
+	private boolean primaryDataMissing() {
+		
+		Boolean hasMissing = false;
+		
+		if(txfFirstName.getText().isEmpty()) {
+			hasMissing = true;
+			txfFirstName.getStyleClass().add("text-field2");
+		}
+		
+		if(txfLastName.getText().isEmpty()) {
+			hasMissing = true;
+			txfLastName.getStyleClass().add("text-field2");
+		}
+		
+		if(txfAge.getText().isEmpty()) {
+			hasMissing = true;
+			txfAge.getStyleClass().add("text-field2");
+		}
+		
+		if(txfBirthdate.getText().isEmpty()) {
+			hasMissing = true;
+			txfBirthdate.getStyleClass().add("text-field2");
+		}
+		
+		if (sex == null) {
+			hasMissing = true;
+			hBoxSex.getStyleClass().add("-fx-border-color:#ff0000;");
+			rdFemale.getStyleClass().add("radio-button2");
+			rdMale.getStyleClass().add("radio-button2");
+			rdPreferNot.getStyleClass().add("radio-button2");
+		}
+		
+		if(marital == null){
+			hasMissing = true;
+			hBoxMarital.getStyleClass().add("-fx-border-color:#ff0000;");
+			rdSingle.getStyleClass().add("radio-button2");
+			rdMarried.getStyleClass().add("radio-button2");
+			rdDivorced.getStyleClass().add("radio-button2");
+			rdWidow.getStyleClass().add("radio-button2");
+		}
+		
+		if(txfAddress.getText().isEmpty()) {
+			hasMissing = true;
+			txfAddress.getStyleClass().add("text-field2");
+		}
+		
+		if(txfCity.getText().isEmpty()) {
+			hasMissing = true;
+			txfCity.getStyleClass().add("text-field2");
+		}
+		
+		if(txfState.getText().isEmpty()) {
+			hasMissing = true;
+			txfState.getStyleClass().add("text-field2");
+		}
+		
+		if(txfPatientPhone.getText().isEmpty()) {
+			hasMissing = true;
+			txfPatientPhone.getStyleClass().add("text-field2");
+		}else {
+			
+		}
+		
+		if(txfSSN.getText().isEmpty()) {
+			hasMissing = true;
+			txfSSN.getStyleClass().add("text-field2");
+		}
+		
+		return hasMissing;
+	}
 
     private Pane buildApplicationDisplay() throws FileNotFoundException {
     	// txfFirstName, txfLastName, txfAge, txfBirthdate, txfAddress
@@ -485,6 +592,8 @@ public class Main extends Application {
     	// btnSubmit, btnClose
     	
     	// *******************make all gridpanes not hboxes**********************
+    	
+    	
     	
     	GridPane application = new GridPane();
     	
@@ -534,12 +643,8 @@ public class Main extends Application {
     	row5.getStyleClass().add("-fx-background-color: #87cefa;");
     	row5.setHgap(15);
     	
-    	
-    	HBox hBoxSex = new HBox();
-    	hBoxSex.setSpacing(10);
-    	
-    	HBox hBoxMarital = new HBox();
     	hBoxMarital.setSpacing(10);
+    	hBoxSex.setSpacing(10);
     	
     	HBox buttons = new HBox();
     	buttons.setSpacing(10);
@@ -560,28 +665,94 @@ public class Main extends Application {
 		
 		// gender radio buttons
 		Label lblSex = new Label("Sex:");
-		RadioButton rdFemale = new RadioButton("Female");
+		
 		rdFemale.setToggleGroup(tgrpSex);
-		RadioButton rdMale = new RadioButton("Male");
+		rdFemale.getStyleClass().add("radio-button1");
+		rdFemale.setOnAction(new EventHandler<ActionEvent>(){
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				sex = rdFemale.getText();
+				
+			}
+			
+		});
 		rdMale.setToggleGroup(tgrpSex);
-		RadioButton rdPreferNot = new RadioButton("Prefer Not To Say");
+		rdMale.getStyleClass().add("radio-button1");
+		rdMale.setOnAction(new EventHandler<ActionEvent>(){
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				sex = rdMale.getText();
+				
+			}
+			
+		});
+		
 		rdPreferNot.setToggleGroup(tgrpSex);
 		
-		hBoxSex.getChildren().addAll(rdFemale,rdMale,rdPreferNot);
+		rdPreferNot.setOnAction(new EventHandler<ActionEvent>(){
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				sex = rdPreferNot.getText();
+				
+			}
+			
+		});
+		rdPreferNot.getStyleClass().add("radio-button1");
 		
 		// marital radio buttons
 		Label lblMaritalStatus = new Label ("Marital Status:");
-		RadioButton rdSingle = new RadioButton("Single");
 		rdSingle.setToggleGroup(tgrpMarital);
-		RadioButton rdMarried = new RadioButton("Married");
+		rdSingle.getStyleClass().add("radio-button1");
+		rdSingle.setOnAction(new EventHandler<ActionEvent>(){
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				marital = rdSingle.getText();
+				
+			}
+			
+		});
+		
 		rdMarried.setToggleGroup(tgrpMarital);
-		RadioButton rdDivorced = new RadioButton("Divorced");
+		rdMarried.getStyleClass().add("radio-button1");
+		rdMarried.setOnAction(new EventHandler<ActionEvent>(){
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				marital = rdMarried.getText();
+				
+			}
+			
+		});
+		
 		rdDivorced.setToggleGroup(tgrpMarital);
-		RadioButton rdWidow = new RadioButton("Widow");
+		rdDivorced.getStyleClass().add("radio-button1");
+		rdDivorced.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				marital = rdDivorced.getText();
+				
+			}
+			
+		});
+		
 		rdWidow.setToggleGroup(tgrpMarital);
+		rdWidow.getStyleClass().add("radio-button1");
+		rdWidow.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				marital = rdWidow.getText();
+				
+			}
+			
+		});
 		
 		
-		hBoxMarital.getChildren().addAll(rdSingle, rdMarried, rdDivorced, rdWidow);
 		
 		Label lblAddress = new Label("Address:");
 		txfAddress = new TextField();	
@@ -624,6 +795,27 @@ public class Main extends Application {
 		
 		btnClose = new Button("Close");
 		btnClose.setAlignment(Pos.CENTER);
+
+		txfFirstName.getStyleClass().add("text-field1");	
+		txfLastName.getStyleClass().add("text-field1");
+		txfAge.getStyleClass().add("text-field1");
+		txfBirthdate.getStyleClass().add("text-field1");
+		txfAddress.getStyleClass().add("text-field1");
+		txfCity.getStyleClass().add("text-field1");
+		txfState.getStyleClass().add("text-field1");
+		txfPatientPhone.getStyleClass().add("text-field1");
+		txfSSN.getStyleClass().add("text-field1");
+		txfEmergName.getStyleClass().add("text-field1");
+		txfEmergPhone.getStyleClass().add("text-field1");
+		txfEmergRelationship.getStyleClass().add("text-field1");
+		
+		if(numNewPatients > 0) {
+			hBoxSex.getChildren().clear();
+			hBoxMarital.getChildren().clear();
+    	}
+		
+		hBoxSex.getChildren().addAll(rdFemale,rdMale,rdPreferNot);
+		hBoxMarital.getChildren().addAll(rdSingle, rdMarried, rdDivorced, rdWidow);
 		
 		row1.add(lblFirstName, 0, 0);
 		row1.add(txfFirstName, 1, 0);
@@ -665,6 +857,9 @@ public class Main extends Application {
 		box3.getChildren().addAll(box1,box2);
 		buttons.getChildren().addAll(btnSubmit, btnClose);
 		application.add(box3, 0, 0);
+		application.add(buttons, 0, 1);
+		
+		numNewPatients++;
 		
 		return application;
 	}
@@ -1055,6 +1250,24 @@ public class Main extends Application {
         EmergencyContact ec = new EmergencyContact("Marva Merritt", "9123815383","Mother");
         System.out.println(ec);
         return azaleaHealth;
+    }
+    
+    public void showMissingDataScreen() {
+    	try {
+			Stage primaryStage = new Stage();
+		    GridPane grdRootPane = new GridPane();
+		    Label lblMissingData = new Label("Missing Data!");
+		    lblMissingData.setTextFill(Color.RED);
+		    grdRootPane.add(lblMissingData, 0, 0);
+		    Scene scene = new Scene(grdRootPane, 200, 100);
+			scene.getStylesheets().add(getClass().getResource("new_application_stylesheet.css").toExternalForm());
+			primaryStage.setScene(scene);
+			primaryStage.setTitle("Application");
+			primaryStage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
     }
   
 }
