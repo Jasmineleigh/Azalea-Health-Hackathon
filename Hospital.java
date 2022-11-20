@@ -72,6 +72,20 @@ public class Hospital {
 	public List<Room> getRooms() {
         return rooms;
     }
+	
+	public Room getRoom(int number) {
+		for(Room r:rooms) {
+			if(r.getRoomNumber()== number) {
+				return r;
+			}
+		}
+		return null;
+	}
+	
+	public Room getRoom(Room r) {
+		return getRoom(r.getRoomNumber());
+	}
+	
 
     public List<Room> getFreeRooms() {
         List<Room> free = new ArrayList<>();
@@ -83,6 +97,20 @@ public class Hospital {
 
     public List<Patient> getPatients() {
         return patients;
+    }
+    
+    public Patient getPatient(int id) {
+    	for(Patient p: patients) {
+    		if(id == p.getId()) {
+    			return p;
+    		}
+    	}
+    	
+    	return null;
+    }
+    
+    public Patient getPatient(Patient patient) {
+    	return getPatient(patient.getId());
     }
 
     public List<Patient> getcheckedOutPatients(){
@@ -109,8 +137,9 @@ public class Hospital {
     		}
     		i++;
     	}
-    	patients.remove(i);
-    	patients.add(p);
+    	
+    	patients.set(i, p);
+    	
     	return p;
     }
 
