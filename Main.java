@@ -11,14 +11,17 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -27,6 +30,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -41,10 +49,13 @@ public class Main extends Application {
     protected int numSearchBarClicks = 0;
     
     // data entered by patient
-    protected TextField txfFirstName, txfLastName, txfAge, txfBirthdate, txfAddress;
+    protected TextField txfFirstName, txfLastName, txfAge, txfBirthdate, txfAddress,
+    					txfCity, txfState, txfPatientPhone, txfSSN,
+    					txfEmergRelationship, txfEmergName, txfEmergPhone;
+    
+    protected ToggleGroup tgrpSex, tgrpMarital, tgrpRace, tgrpIllnesses;
     protected Label lblFirstName, lblLastName, lblAge, lblBirthdate, lblAddress;
     protected Button btnSubmit, btnClose;
-    protected ListView<String> lvwRaceSelection = new ListView<>();
     
     // data entered by nurse upon preparation
     protected TextField txfHeight, txfWeight, txfBPM, txfSystolicNum, txfDiastolicNum;
@@ -65,7 +76,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         try {
             Pane root = buildGUI();
-            Scene scene = new Scene(root, 1200, 590);
+            Scene scene = new Scene(root, 1600, 650);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -231,6 +242,7 @@ public class Main extends Application {
     	return display;
     }
 
+    // search for patient
     private VBox buildCheckedout() {
         lvwCheckedout.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         lvwCheckedout.setPrefHeight(600);
@@ -394,7 +406,7 @@ public class Main extends Application {
     	hBoxExamRoomButtons.getStyleClass().add("buttons_box");
 
         btnPrepPatient = new Button("Prepare");
-        btnPrepPatient.setOnAction(new CreateAddPatientEventHandler());
+        btnPrepPatient.setOnAction(new CreatePrepareEventHandler());
 
         btnHold = new Button("Hold");
         btnHold.setOnAction(new CreateHoldEventHandler());
@@ -414,31 +426,16 @@ public class Main extends Application {
 
         @Override
         public void handle(ActionEvent arg0) {
-            int patientID = azaleaHealth.addPatient();
-            List<Patient> patients = azaleaHealth.getPatients();
-            Patient patient = null;
-            int index = 0;
-            int i = 0;
-            for(Patient p : patients) {
-                if(p.getId() == patientID) {
-                	patient = p;
-                	index = i;
-                	break;
-                }
-                i++;
-            }
-
-            if(patient != null) {
-            	azaleaHealth.getPatients().set(index, showApplicationScreen(patient));
-                System.out.println("Adding Patient...");
             
-            }
+        	showApplicationScreen();
+
         }
 
     }
     
-    public Patient showApplicationScreen(Patient patient) {
-    	Patient newPatient = patient;
+    public Patient showApplicationScreen() {
+    	Patient newPatient = null;
+    	
 		try {
 			Stage primaryStage = new Stage();
 		    Pane grdRootPane = buildApplicationDisplay();
@@ -447,17 +444,18 @@ public class Main extends Application {
 		    btnSubmit.setOnAction(new EventHandler<ActionEvent>() {
 	            @Override
 	            public void handle(ActionEvent event) {
-	            	String firstName = txfFirstName.getText();
-	            	String lastName = txfLastName.getText();
-	            	String address = txfAddress.getText();
-	            	int age = Integer.parseInt(txfAge.getText());
-	            	LocalDate birthdate = LocalDate.parse(txfBirthdate.getText());
-	            	Patient newP = new Patient(patient.getId(), firstName, lastName,
-	            										address, age, birthdate);
-	                lvwWaitingPatients.getItems().add(newP);
-	                azaleaHealth.addPatient(newP);
-	            	System.out.println(newP.getPatientData());
+	            	
+	            	int patientID = azaleaHealth.addPatient();
+
+	            	azaleaHealth.getPatient(patientID).setFirstName(txfFirstName.getText());
+	            	azaleaHealth.getPatient(patientID).setLastName(txfLastName.getText());
+	            	azaleaHealth.getPatient(patientID).setAddress(txfAddress.getText());
+	            	azaleaHealth.getPatient(patientID).setAge(Integer.parseInt(txfAge.getText()));
+	            	azaleaHealth.getPatient(patientID).setBirthdate(LocalDate.parse(txfBirthdate.getText()));
+	          
+	                lvwWaitingPatients.getItems().add(azaleaHealth.getPatient(patientID));
 	                primaryStage.close();
+	                System.out.println(azaleaHealth.getPatient(patientID).getPatientData());
 	            }
 	        });
 		    
@@ -469,8 +467,8 @@ public class Main extends Application {
 	            }
 	        });
 		    
-		    Scene scene = new Scene(grdRootPane, 600, 400);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		    Scene scene = new Scene(grdRootPane, 900, 200);
+			scene.getStylesheets().add(getClass().getResource("new_application_stylesheet.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Application");
 			primaryStage.show();
@@ -481,45 +479,197 @@ public class Main extends Application {
 		return newPatient;
     }
 
-    private Pane buildApplicationDisplay() {
+    private Pane buildApplicationDisplay() throws FileNotFoundException {
     	// txfFirstName, txfLastName, txfAge, txfBirthdate, txfAddress
     	// lblFirstName, lblLastName, lblAge, lblBirthdate, lblAddress
     	// btnSubmit, btnClose
     	
-    	GridPane application = new GridPane();
-    	HBox topRow = new HBox();
-    	HBox bottomRow = new HBox();
+    	// *******************make all gridpanes not hboxes**********************
     	
-		lblFirstName = new Label ("First Name");
+    	GridPane application = new GridPane();
+    	
+    	VBox vBoxBody = new VBox();
+		InputStream stream = new FileInputStream("src\\ver1\\azalea_health.png");
+		Image imgAH = new Image(stream);
+		
+		vBoxBody.getStyleClass().add("-fx-padding:15px;");
+		vBoxBody.setAlignment(Pos.CENTER);
+		
+		ImageView imgvwBody = new ImageView();
+		imgvwBody.setImage(imgAH);
+		imgvwBody.setFitHeight(vBoxBody.getWidth());
+		// iv.setFitHeight(textSize);
+		// iv.setScaleY(iconSize/textSize);
+		vBoxBody.getChildren().add(imgvwBody);
+    	
+    	VBox box1 = new VBox();
+    	box1.setSpacing(20);
+    	box1.getStyleClass().add("vbox");
+    	
+    	VBox box2 = new VBox();
+    	box2.setSpacing(20);
+    	box2.getStyleClass().add("vbox");
+    	
+    	VBox box3 = new VBox();
+    	box3.getStyleClass().add("vbox");
+    	box3.setAlignment(Pos.CENTER);
+    	
+    	GridPane row1 = new GridPane();
+    	row1.getStyleClass().add("-fx-background-color: #87cefa;");
+    	row1.setHgap(15);
+    	
+    	GridPane row2 = new GridPane();
+    	row2.getStyleClass().add("-fx-background-color: #87cefa;");
+    	row2.setHgap(15);
+    	
+    	GridPane row3 = new GridPane();
+    	row3.getStyleClass().add("-fx-background-color: #87cefa;");
+    	row3.setHgap(15);
+    	
+    	GridPane row4 = new GridPane();
+    	row4.getStyleClass().add("-fx-background-color: #87cefa;");
+    	row4.setHgap(15);
+    	
+    	GridPane row5 = new GridPane();
+    	row5.getStyleClass().add("-fx-background-color: #87cefa;");
+    	row5.setHgap(15);
+    	
+    	
+    	HBox hBoxSex = new HBox();
+    	hBoxSex.setSpacing(10);
+    	
+    	HBox hBoxMarital = new HBox();
+    	hBoxMarital.setSpacing(10);
+    	
+    	HBox buttons = new HBox();
+    	buttons.setSpacing(10);
+    	
+    	Label lblPatientInfo = new Label("PATIENT INFORMATION");
+
+		Label lblFirstName = new Label ("First Name:");
 		txfFirstName = new TextField();
 		
-		lblLastName = new Label("Last Name");
+		Label lblLastName = new Label("Last Name:");
 		txfLastName = new TextField();
 		
-		lblAge = new Label("Age");
-		txfAge = new TextField();
+		Label lblAge = new Label("Age:");
+		txfAge = new TextField();	
 		
-		lblBirthdate = new Label("Birthdate");
+		Label lblBirthdate = new Label("Birthdate:");
 		txfBirthdate = new TextField();
 		
-		lblAddress = new Label("Address");
-		txfAddress = new TextField();
+		// gender radio buttons
+		Label lblSex = new Label("Sex:");
+		RadioButton rdFemale = new RadioButton("Female");
+		rdFemale.setToggleGroup(tgrpSex);
+		RadioButton rdMale = new RadioButton("Male");
+		rdMale.setToggleGroup(tgrpSex);
+		RadioButton rdPreferNot = new RadioButton("Prefer Not To Say");
+		rdPreferNot.setToggleGroup(tgrpSex);
 		
-		HBox buttons = new HBox();
+		hBoxSex.getChildren().addAll(rdFemale,rdMale,rdPreferNot);
 		
+		// marital radio buttons
+		Label lblMaritalStatus = new Label ("Marital Status:");
+		RadioButton rdSingle = new RadioButton("Single");
+		rdSingle.setToggleGroup(tgrpMarital);
+		RadioButton rdMarried = new RadioButton("Married");
+		rdMarried.setToggleGroup(tgrpMarital);
+		RadioButton rdDivorced = new RadioButton("Divorced");
+		rdDivorced.setToggleGroup(tgrpMarital);
+		RadioButton rdWidow = new RadioButton("Widow");
+		rdWidow.setToggleGroup(tgrpMarital);
+		
+		
+		hBoxMarital.getChildren().addAll(rdSingle, rdMarried, rdDivorced, rdWidow);
+		
+		Label lblAddress = new Label("Address:");
+		txfAddress = new TextField();	
+		
+		Label lblCity = new Label("City:");
+		txfCity = new TextField();
+		
+		Label lblState = new Label("State:");
+		txfState = new TextField();
+		
+		Label lblPhone = new Label("Phone:");
+		txfPatientPhone = new TextField();
+		
+		Text parenth1 = new Text("(");
+		parenth1.setFill(Color.GHOSTWHITE);
+		parenth1.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+		Text parenth2 = new Text(")");
+		parenth2.setFill(Color.GHOSTWHITE);
+		parenth2.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+		Text dash = new Text("-");
+		dash.setFill(Color.GHOSTWHITE);
+		dash.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+		
+		Label lblSSN = new Label("SSN:");
+		txfSSN = new TextField();
+		
+		Label lblEmergencyContact = new Label("EMERGENCY CONTACT");
+		
+		Label lblEmergName = new Label("Name:");
+		txfEmergName = new TextField();
+		
+		Label lblEmergPhone = new Label("Phone:");
+		txfEmergPhone = new TextField();
+		
+		Label lblEmergRelationship = new Label("Relationship:");
+		txfEmergRelationship = new TextField();
+
 		btnSubmit = new Button("Submit");
-		btnClose = new Button("Close");
+		btnSubmit.setAlignment(Pos.CENTER);
 		
+		btnClose = new Button("Close");
+		btnClose.setAlignment(Pos.CENTER);
+		
+		row1.add(lblFirstName, 0, 0);
+		row1.add(txfFirstName, 1, 0);
+		row1.add(lblLastName, 2, 0);
+		row1.add(txfLastName, 3, 0);
+		
+		row2.add(lblBirthdate, 0, 0);
+		row2.add(txfBirthdate, 1, 0);
+		row2.add(lblAge, 2, 0);
+		row2.add(txfAge, 3, 0);
+		row2.add(lblSex, 4, 0);
+		row2.add(hBoxSex, 5, 0);
+		row2.add(lblMaritalStatus, 6, 0);
+		row2.add(hBoxMarital, 7, 0);
+		
+		row3.add(lblAddress, 0, 0);
+		row3.add(txfAddress, 1, 0);
+		row3.add(lblCity, 2, 0);
+		row3.add(txfCity, 3, 0);
+		row3.add(lblState, 4, 0);
+		row3.add(txfState, 5, 0);
+		row3.add(lblPhone, 6, 0);
+		row3.add(txfPatientPhone, 7, 0);
+		row3.add(lblSSN, 8, 0);
+		row3.add(txfSSN, 9, 0);
+		
+		row4.add(lblEmergencyContact, 0, 0);
+		
+		row5.add(lblEmergName, 0, 0);
+		row5.add(txfEmergName, 1, 0);
+		row5.add(lblEmergPhone, 2, 0);
+		row5.add(txfEmergPhone, 4, 0);
+		row5.add(lblEmergRelationship, 9, 0);
+		row5.add(txfEmergRelationship, 10, 0);
+		
+		
+		box1.getChildren().addAll(vBoxBody, lblPatientInfo,row1, row2, row3);
+		box2.getChildren().addAll(row4, row5);
+		box3.getChildren().addAll(box1,box2);
 		buttons.getChildren().addAll(btnSubmit, btnClose);
-		topRow.getChildren().addAll(lblFirstName, txfFirstName, lblLastName, txfLastName, lblAge, txfAge);
-		bottomRow.getChildren().addAll(lblBirthdate, txfBirthdate, lblAddress, txfAddress);
-		application.add(topRow, 0, 0);
-		application.add(bottomRow, 0, 1);
-		application.add(buttons, 0, 2);
+		application.add(box3, 0, 0);
 		
 		return application;
 	}
 
+    // Move Patient down in list (purpose of this process unknown)
 	public class CreateMoveUpEventHandler implements EventHandler<ActionEvent> {
 
         @Override
@@ -536,6 +686,7 @@ public class Main extends Application {
 
     }
 
+	// Move Patient up in list (purpose of this process unknown)
     public class CreateMoveDownEventHandler implements EventHandler<ActionEvent> {
 
         @Override
@@ -552,42 +703,23 @@ public class Main extends Application {
 
     }
 
-    public class CreateAddPatientEventHandler implements EventHandler<ActionEvent> {
+    // Preparing patient
+    public class CreatePrepareEventHandler implements EventHandler<ActionEvent> {
 
         @Override
         public void handle(ActionEvent arg0) {
-            int selectedWaiting = lvwWaitingPatients.getSelectionModel().getSelectedIndex();
             Patient selWaiting = lvwWaitingPatients.getSelectionModel().getSelectedItem();
-            int selectedRoom = lvwFreeRooms.getSelectionModel().getSelectedIndex();
             Room selRoom = lvwFreeRooms.getSelectionModel().getSelectedItem();
-
-            List<Patient> patients = azaleaHealth.getPatients();
-            List<Room> rooms = azaleaHealth.getFreeRooms();
-            
-           
-            for(Room r : rooms) {
-                if(selRoom.equals(r)) {
-                    for(Patient p : patients) {
-                        if(selWaiting.getId()== p.getId()) {
-                            r.addPatient(p);
-                            p.setStatus(PatientStatus.READY);
-                            r = preparePatientScreen(r);
-                            lvwSortedRooms.getItems().add(r);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            lvwWaitingPatients.getItems().remove(selectedWaiting);
-            lvwFreeRooms.getItems().remove(selectedRoom);
+                
+            preparePatientScreen(azaleaHealth.getRoom(selRoom),azaleaHealth.getPatient(selWaiting));
 
         }
-
-		private Room preparePatientScreen(Room r) {
+        
+        // Stage for Room Prep
+		private Room preparePatientScreen(Room r, Patient p) {
 			try {
 				Stage primaryStage = new Stage();
-			    Pane grdRootPane = buildPreparationApplicationDisplay(r.getPatient());
+			    Pane grdRootPane = buildPreparationApplicationDisplay(p);
 			   
 			    btnSubmit.setOnAction(new EventHandler<ActionEvent>() {
 		            @Override
@@ -598,12 +730,18 @@ public class Main extends Application {
 		            	int systolic = Integer.parseInt(txfSystolicNum.getText());
 		            	int diastolic = Integer.parseInt(txfDiastolicNum.getText());
 		            	
-		            	r.getPatient().setHeight(height);
-		            	r.getPatient().setWeight(weight);
-		            	r.getPatient().setHeartRate(bPM);
-		            	r.getPatient().setSystolicNumber(systolic);
-		            	r.getPatient().setDiastolicNumber(diastolic);
-		                primaryStage.close();
+		            	azaleaHealth.getPatient(p).setHeight(height);
+		            	azaleaHealth.getPatient(p).setWeight(weight);
+		            	azaleaHealth.getPatient(p).setHeartRate(bPM);
+		            	azaleaHealth.getPatient(p).setSystolicNumber(systolic);
+		            	azaleaHealth.getPatient(p).setDiastolicNumber(diastolic);
+		            	
+		            	azaleaHealth.getRoom(r).addPatient(azaleaHealth.getPatient(p));
+		            	azaleaHealth.getPatient(p).setStatus(PatientStatus.READY);
+		            	lvwWaitingPatients.getItems().remove(r.getPatient());
+		                lvwFreeRooms.getItems().remove(r);
+		            	
+		            	primaryStage.close();
 		            }
 		        });
 			    
@@ -628,6 +766,7 @@ public class Main extends Application {
 			
 		}
 
+		// Prepare Patient Pane
 		private Pane buildPreparationApplicationDisplay(Patient p) {
 
 	    	GridPane application = new GridPane();
@@ -636,11 +775,21 @@ public class Main extends Application {
 	    	HBox topRow = new HBox();
 	    	HBox secRow = new HBox();
 	    	
-	    	String first = p.getFirstName();
-	    	String last = p.getLastName();
-	    	int age = p.getAge();
-	    	String birthdate = p.getBirthdate().toString();
-	    	String address = p.getAddress();
+	    	lblFirstName = new Label ("First Name");
+		
+			lblLastName = new Label("Last Name");
+			
+			lblAge = new Label("Age");
+			
+			lblBirthdate = new Label("Birthdate");
+			
+			lblAddress = new Label("Address");
+	    	
+	    	String first = azaleaHealth.getPatient(p).getFirstName();
+	    	String last = azaleaHealth.getPatient(p).getLastName();
+	    	int age = azaleaHealth.getPatient(p).getAge();
+	    	String birthdate = azaleaHealth.getPatient(p).getBirthdate().toString();
+	    	String address = azaleaHealth.getPatient(p).getAddress();
 	    	
 	    	Label lblFirst = new Label(": "+first+"\t\t");
 	    	Label lblLast = new Label(": "+last+"\t");
@@ -688,89 +837,125 @@ public class Main extends Application {
     }
     
     // Working on implementation of what happens when a room button is pressed
-    public class CreateRoomEventHandler implements EventHandler<ActionEvent> {
-    	
-    	@Override
-    	public void handle (ActionEvent event) {
-    		try {
-				Stage primaryStage = new Stage();
-			    Pane grdRootPane = buildRoomDataDisplay();
-			   
-			    btnSubmit.setOnAction(new EventHandler<ActionEvent>() {
-		            @Override
-		            public void handle(ActionEvent event) {
-		            	double height = Double.parseDouble(txfHeight.getText());
-		            	double weight = Double.parseDouble(txfWeight.getText());
-		            	int bPM = Integer.parseInt(txfBPM.getText());
-		            	int systolic = Integer.parseInt(txfSystolicNum.getText());
-		            	int diastolic = Integer.parseInt(txfDiastolicNum.getText());
-		            	
-		            	r.getPatient().setHeight(height);
-		            	r.getPatient().setWeight(weight);
-		            	r.getPatient().setHeartRate(bPM);
-		            	r.getPatient().setSystolicNumber(systolic);
-		            	r.getPatient().setDiastolicNumber(diastolic);
-		                primaryStage.close();
-		            }
-		        });
-			    
-			    
-			    btnClose.setOnAction(new EventHandler<ActionEvent>() {
-		            @Override
-		            public void handle(ActionEvent event) {
-		                primaryStage.close();
-		            }
-		        });
-			    
-			    Scene scene = new Scene(grdRootPane, 600, 400);
-				scene.getStylesheets().add(getClass().getResource("roomstylesheet.css").toExternalForm());
-				primaryStage.setScene(scene);
-				primaryStage.setTitle("Room");
-				primaryStage.show();
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-    	}
-    }
-    
-
     public void buildRoomDataDisplay(String number) throws FileNotFoundException {
 		int roomNumber = Integer.parseInt(number.substring(number.indexOf("1"),number.length()));
-		Pane root = new Pane();
+		GridPane root = new GridPane();
 		GridPane col1 = new GridPane();
 		GridPane col2 = new GridPane();
+		
+		// check
+		System.out.println(roomNumber);
 		
 		VBox vBoxBody = new VBox();
 		InputStream stream = new FileInputStream("src\\ver1\\female.jpg");
 		Image imgFemale = new Image(stream);
-
+		
+		
 		ImageView imgvwBody = new ImageView();
 		imgvwBody.setImage(imgFemale);
 		vBoxBody.getChildren().add(imgvwBody);
 		col1.getChildren().add(vBoxBody);
 		
-		Label lblStatus;
-		Label lblName;
-		Label lblAge;
-		Label lblDOB;
-		Label lblRace;
-		Label lblSex;
-		Label lblAddress;
-		Label lblState;
-		Label lblZip;
+		Room room = azaleaHealth.getRoom(roomNumber);
 		
-		Label lblHeight;
-		Label lblWeight;
-		Label lblBPM;
-		Label lblBloodPressure;
+		// needs to be able to set status
 		
-		Label lblIllnesses;
+		Label lblStatus = new Label("STATUS: ");
+		Label lblName = new Label("Name: ");
+		Label lblAge = new Label("Age: ");
+		Label lblDOB = new Label("DOB: ");
+		Label lblAddress = new Label("Address: ");
+		Label lblHeight = new Label("Height: ");
+		Label lblWeight = new Label("Weight");		
+		Label lblBPM = new Label("BPM: ");
+		Label lblBloodPressure = new Label("Blood Pressure: ");
+		Label lblRace = null;
+		Label lblSex = null;
+		Label lblState = null;
+		Label lblZip = null;
+		Label lblIllnesses = null;
+		Label lblNotes = new Label("Notes: ");
 		
-		Label lblNotes;
+		
+		// Hold data
+		HBox hBoxLine1 = new HBox();
+		hBoxLine1.setSpacing(3);
+		
+		HBox hBoxLine2 = new HBox();
+		hBoxLine2.setSpacing(3);
+		
+		HBox hBoxLine3 = new HBox();
+		hBoxLine3.setSpacing(3);
+
+		
+		HBox hBoxLine4 = new HBox();
+		hBoxLine4.setSpacing(3);
+		
+		HBox hBoxLine5 = new HBox();
+		hBoxLine5.setSpacing(3);	
+		
+//		HBox hBoxLine6 = new HBox();
+//		hBoxLine6.setSpacing(3);
 		
 		
 		
-		root.getChildren().add(col1);
+		
+		if(room.isFree()) {
+			hBoxLine1.getChildren().addAll(lblStatus);
+			hBoxLine2.getChildren().addAll(lblName,lblAge,lblDOB);
+//			hBoxLine3.getChildren().addAll(lblRace, lblSex);
+			hBoxLine4.getChildren().addAll(lblAddress);
+			hBoxLine5.getChildren().addAll(lblHeight, lblWeight, lblBPM, lblBloodPressure);
+//			hBoxLine6.getChildren().addAll(lblIllnesses);
+			
+		}else {
+			Text txtStatus = new Text(room.getPatient().getStatus()+"");
+
+			Text txtName = new Text(room.getPatient().getFirstName() + " " + room.getPatient().getLastName());
+
+			Text txtAge = new Text(room.getPatient().getAge()+"");
+
+			Text txtDOB = new Text(room.getPatient().getBirthdate().getMonthValue() + "/ "
+								+ room.getPatient().getBirthdate().getDayOfMonth() + "/ "
+								+room.getPatient().getBirthdate().getYear());
+			
+			Text txtSex = null;
+			
+			Text txtRace = null;
+			
+			Text txtAddress = new Text(room.getPatient().getAddress());
+			
+			Text txtState = null;
+			
+			Text txtZip = null;
+			
+			Text txtHeight = new Text(room.getPatient().getHeight() + "");
+			
+			Text txtWeight = new Text(room.getPatient().getWeight()+"");
+			
+			Text txtBPM = new Text(room.getPatient().getHeartRate()+"");
+			
+			Text txtBloodPressure = new Text(room.getPatient().getBloodPressure());
+		
+			Text txtIllnesses = null;
+			
+			hBoxLine1.getChildren().addAll(lblStatus, txtStatus);
+			hBoxLine2.getChildren().addAll(lblName, txtName, lblAge, txtAge, lblDOB, txtDOB);
+//			hBoxLine3.getChildren().addAll(lblRace, txtRace, lblSex, txtSex);
+			hBoxLine4.getChildren().addAll(lblAddress, txtAddress);
+			hBoxLine5.getChildren().addAll(lblHeight, txtHeight, lblWeight, txtWeight, lblBPM, txtBPM, lblBloodPressure, txtBloodPressure);
+//			hBoxLine6.getChildren().addAll(lblIllnesses, txtIllnesses);
+		}
+
+		col2.add(hBoxLine1, 0, 0);
+		col2.add(hBoxLine2, 0, 1);
+//		col2.add(hBoxLine3, 0, 2);
+		col2.add(hBoxLine4, 0, 3);
+		col2.add(hBoxLine5, 0, 4);
+//		col2.add(hBoxLine6, 0, 5);
+
+		root.add(col1, 0, 0);
+		root.add(col2, 1, 0);
 		
 		
 		try {
@@ -792,6 +977,7 @@ public class Main extends Application {
 		
 	}
 
+    // Hold Event Handler
 	public class CreateHoldEventHandler implements EventHandler<ActionEvent> {
 
         @Override
@@ -806,7 +992,7 @@ public class Main extends Application {
         }
 
     }
-
+	// In progress Event Handler
     public class CreateInProgressEventHandler implements EventHandler<ActionEvent> {
 
         @Override
@@ -821,7 +1007,7 @@ public class Main extends Application {
         }
 
     }
-
+    // check out event handler
     public class CreateCheckoutEventHandler implements EventHandler<ActionEvent> {
 
         @Override
@@ -839,16 +1025,35 @@ public class Main extends Application {
 
     }
 
+    // start main method
     public static void main(String[] args) {
         launch(args);
     }
-
+    
+    /*
+     * Helpers
+     */
+    
+    // create hospital object
     private Hospital createHospital() {
         Hospital azaleaHealth = new Hospital();
+        azaleaHealth.addPatient();
         azaleaHealth.addPatient();
         azaleaHealth.addRoom(100);
         azaleaHealth.addRoom(101);
         azaleaHealth.addRoom(102);
+        for(Patient p: azaleaHealth.getPatients()) {
+        	if(p.getId()==101) {
+        		p.setFirstName("Jasmine");
+        		p.setLastName("Merritt");
+        		p.setAge(21);
+        		p.setAddress("1213 South Highway 129");
+        		p.setBirthdate(LocalDate.parse("2001-07-04"));
+        	}
+        }
+        
+        EmergencyContact ec = new EmergencyContact("Marva Merritt", "9123815383","Mother");
+        System.out.println(ec);
         return azaleaHealth;
     }
   
