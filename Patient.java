@@ -3,6 +3,7 @@ package ver1;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /*
  * In the original project, this was written by Lucas Keasbey
@@ -37,6 +38,7 @@ public class Patient implements Comparable<Patient> {
     
     // set by nurse or doctor
     protected PatientStatus status;
+    protected List<String> notes;
     
     // check for if biographical info is entered (added by jlmerritt)
     protected boolean hasBiographical = false;
@@ -44,6 +46,7 @@ public class Patient implements Comparable<Patient> {
     public Patient(int id) {
         this.id = id;
         this.status = PatientStatus.WAITING;
+        notes = new ArrayList<>();
     }
     
     public Patient(int id, String firstName, String lastName, 
@@ -228,7 +231,23 @@ public class Patient implements Comparable<Patient> {
         this.status = status;
     }
     
-    public String getBloodPressure() {
+    public String getSSN() {
+		return SSN;
+	}
+
+	public void setSSN(String sSN) {
+		SSN = sSN;
+	}
+
+	public List<String> getNotes() {
+		return notes;
+	}
+	
+	public void addNote(String note) {
+		notes.add(note);
+	}
+	
+	public String getBloodPressure() {
     	return systolicNumber + "/" + diastolicNumber;
     }
     
