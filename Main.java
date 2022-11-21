@@ -40,7 +40,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
 	// buttons for check-in and wait-list
     protected Button btnNewPatient, btnCheckIn, btnMoveUp, btnMoveDown;
-    protected Button btnAddRoom, btnPrepPatient, btnHold, btnCheckout, btnInProgress, btnMoreData, btnData;
+    protected Button btnAddRoom, btnPrepPatient, btnMoreData, btnData;
     protected TextArea txaPatientData;
     
     // search bar variables
@@ -56,30 +56,31 @@ public class Main extends Application {
     
     protected ToggleGroup tgrpSex, tgrpMarital, tgrpRace, tgrpIllnesses;
     protected Label lblFirstName, lblLastName, lblAge, lblBirthdate, lblAddress;
-    protected Button btnSubmit, btnClose;
+    protected Button btnSubmitNew, btnCloseNew, btnSubmitPrep, btnClosePrep, btnCloseEmptyRoom, btnCloseRoom;
     
     // data entered by nurse upon preparation
     protected TextField txfHeight, txfWeight, txfBPM, txfSystolicNum, txfDiastolicNum;
     protected Label lblHeight, lblWeight, lblBPM, lblSystolicNum, lblDiastolicNum;
     
+    protected Text txtStatus;
+    protected TextArea txaNotes = new TextArea();
     // data for queue management
     protected Label lblWaitList, lblFreeRooms, lblOccupiedRooms, lblCheckedOut, lblGetData;
     protected ListView<Patient> lvwWaitingPatients = new ListView<>();
     protected ListView<Room> lvwFreeRooms = new ListView<>();
     protected ListView<Room> lvwSortedRooms = new ListView<>();
-    protected ListView<Patient> lvwCheckedout = new ListView<>();
+    protected ListView<Patient> lvwPatients = new ListView<>();
     protected Hospital azaleaHealth = createHospital();
     
     // update
     protected Button btnRoom1, btnRoom2, btnRoom3, btnRoom4, btnRoom5, btnRoom6;
-
-	protected HBox hBoxSex = new HBox();
+	protected Button btnAddNote, btnHold, btnCheckout, btnInProgress;
+    
 	protected RadioButton rdFemale = new RadioButton("Female");
 	protected RadioButton rdMale = new RadioButton("Male");
 	protected RadioButton rdPreferNot = new RadioButton("Prefer Not To Say");
 	protected String sex = null;
-	
-	protected HBox hBoxMarital = new HBox();
+
 	protected RadioButton rdWidow = new RadioButton("Widow");
 	protected RadioButton rdDivorced = new RadioButton("Divorced");
 	protected RadioButton rdMarried = new RadioButton("Married");
@@ -90,7 +91,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         try {
             Pane root = buildGUI();
-            Scene scene = new Scene(root, 1600, 650);
+            Scene scene = new Scene(root, 1600, 750);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -114,7 +115,6 @@ public class Main extends Application {
    
     	
     	GridPane firstCol = new GridPane();
-//    	firstCol.getStyleClass().add("grid1");
     	firstCol.setPadding(new Insets(10, 10, 10, 10));
     	firstCol.setVgap(20);
     	firstCol.setHgap(30);
@@ -136,7 +136,7 @@ public class Main extends Application {
      	secondCol.setPadding(new Insets(10, 10, 10, 10));
      	
     	secondCol.add(lblCheckedOut, 0, 0);
-    	secondCol.add(buildCheckedout(), 0, 1);
+    	secondCol.add(buildSearchBar(), 0, 1);
     	secondCol.add(btnData, 0, 2);
     	
     	fullPane.add(firstCol, 0, 0);
@@ -146,18 +146,6 @@ public class Main extends Application {
         root.getStyleClass().add("root");
         root.getChildren().addAll(fullPane);
         return root;
-    }
-
-    private HBox buildDisplay() {
-        HBox display = new HBox();
-        display.getStyleClass().add("h_box");
-        VBox vBoxWaitingPatients = buildListOfWaitingPatients();
-        VBox vBoxFreeRooms = buildListOfFreeRooms();
-        VBox vBoxSortedRooms = buildListOfSortedRooms();
-        
-        display.getChildren().addAll(vBoxWaitingPatients, vBoxFreeRooms, vBoxSortedRooms);
-
-        return display;
     }
     
     private Pane buildRoomButtonsDisplay() {
@@ -184,18 +172,88 @@ public class Main extends Application {
     	
     	btnRoom2 = new Button("Room 101");
     	btnRoom2.getStyleClass().add("available_room_button");
+    	btnRoom2.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				try {
+					buildRoomDataDisplay(btnRoom2.getText());
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+    		
+    	});
     	
     	btnRoom3 = new Button("Room 102");
     	btnRoom3.getStyleClass().add("available_room_button");
+    	btnRoom3.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				try {
+					buildRoomDataDisplay(btnRoom3.getText());
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+    		
+    	});
     	
     	btnRoom4 = new Button("Room 103");
     	btnRoom4.getStyleClass().add("available_room_button");
+    	btnRoom4.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				try {
+					buildRoomDataDisplay(btnRoom4.getText());
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+    		
+    	});
     	
     	btnRoom5 = new Button("Room 104");
     	btnRoom5.getStyleClass().add("available_room_button");
+    	btnRoom5.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				try {
+					buildRoomDataDisplay(btnRoom5.getText());
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+    		
+    	});
     	
     	btnRoom6 = new Button("Room 105");
     	btnRoom6.getStyleClass().add("available_room_button");
+    	btnRoom6.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				try {
+					buildRoomDataDisplay(btnRoom6.getText());
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+    		
+    	});
     	
     	grid.add(btnRoom1, 0, 0);
     	grid.add(btnRoom2, 0, 1);
@@ -221,7 +279,7 @@ public class Main extends Application {
     		@Override
     		public void handle(ActionEvent event) {
     			List<Patient> patients = azaleaHealth.getPatients();
-    			Patient selected = lvwCheckedout.getSelectionModel().getSelectedItem();
+    			Patient selected = lvwPatients.getSelectionModel().getSelectedItem();
     			
     			for(Patient p: patients) {
     				if(selected.getId() == p.getId()) {
@@ -257,10 +315,10 @@ public class Main extends Application {
     }
 
     // search for patient
-    private VBox buildCheckedout() {
-        lvwCheckedout.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        lvwCheckedout.setPrefHeight(600);
-        lvwCheckedout.setPrefWidth(300);
+    private VBox buildSearchBar() {
+        lvwPatients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        lvwPatients.setPrefHeight(600);
+        lvwPatients.setPrefWidth(300);
         
         HBox hBoxSearch = new HBox();
         hBoxSearch.setSpacing(3);
@@ -301,14 +359,14 @@ public class Main extends Application {
 			@Override
 			public void handle(KeyEvent arg0) {
 				// TODO Auto-generated method stub
-				lvwCheckedout.getItems();
+				lvwPatients.getItems();
 				String search = txfSearchPatient.getText();
 				List<Patient> found = azaleaHealth.getPatientsWithTheseLetters(search);
 				
-				lvwCheckedout.getItems().clear();
+				lvwPatients.getItems().clear();
 				
 				for(Patient p:found) {
-					lvwCheckedout.getItems().add(p);
+					lvwPatients.getItems().add(p);
 				}
 			}
         	
@@ -328,23 +386,13 @@ public class Main extends Application {
 
         VBox display = new VBox();
         display.getStyleClass().add("list");
-        display.getChildren().addAll(hBoxSearch,lvwCheckedout);
+        display.getChildren().addAll(hBoxSearch,lvwPatients);
 
         return display;
     }
-
-    private VBox buildListOfSortedRooms() {
-        lvwSortedRooms.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        lvwSortedRooms.setPrefHeight(200);
-        lvwSortedRooms.setPrefWidth(350);
-
-        VBox display = new VBox();
-        display.getStyleClass().add("list");
-        display.getChildren().add(lvwSortedRooms);
-
-        return display;
-    }
-
+    
+    
+    // Available rooms display
     private VBox buildListOfFreeRooms() {
         lvwFreeRooms.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         lvwFreeRooms.setPrefHeight(300);
@@ -355,16 +403,20 @@ public class Main extends Application {
         for(Room r : freeRooms) {
             lvwFreeRooms.getItems().add(r);
         }
+        
+        btnPrepPatient = new Button("Prepare");
+        btnPrepPatient.setOnAction(new CreatePrepareEventHandler());
 
         VBox display = new VBox();
         HBox hBoxList = new HBox();
         hBoxList.getStyleClass().add("list");
-        hBoxList.getChildren().addAll(buildExamRoomButtons(), lvwFreeRooms);
+        hBoxList.getChildren().addAll(btnPrepPatient, lvwFreeRooms);
         display.getChildren().add(hBoxList);
 
         return display;
     }
 
+    // Waiting patients display
     private VBox buildListOfWaitingPatients() {
         lvwWaitingPatients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         lvwWaitingPatients.setPrefHeight(300);
@@ -396,9 +448,9 @@ public class Main extends Application {
         btnCheckIn.setOnAction(new EventHandler<ActionEvent> () {
     		@Override
     		public void handle(ActionEvent event) {
-    			int fromCheckout = lvwCheckedout.getSelectionModel().getSelectedIndex();
-    			Patient toCheckIn = lvwCheckedout.getSelectionModel().getSelectedItem();
-    			lvwCheckedout.getItems().remove(fromCheckout);
+    			int fromCheckout = lvwPatients.getSelectionModel().getSelectedIndex();
+    			Patient toCheckIn = lvwPatients.getSelectionModel().getSelectedItem();
+    			lvwPatients.getItems().remove(fromCheckout);
     			toCheckIn.setStatus(PatientStatus.WAITING);
     			lvwWaitingPatients.getItems().add(toCheckIn);
     		}
@@ -414,28 +466,10 @@ public class Main extends Application {
 
         return buttonsBox;
     }
-    
-    public VBox buildExamRoomButtons() {
-    	VBox hBoxExamRoomButtons = new VBox();
-    	hBoxExamRoomButtons.getStyleClass().add("buttons_box");
 
-        btnPrepPatient = new Button("Prepare");
-        btnPrepPatient.setOnAction(new CreatePrepareEventHandler());
-
-        btnHold = new Button("Hold");
-        btnHold.setOnAction(new CreateHoldEventHandler());
-
-        btnInProgress = new Button("In-Progress");
-        btnInProgress.setOnAction(new CreateInProgressEventHandler());
-
-        btnCheckout = new Button("CheckOut");
-        btnCheckout.setOnAction(new CreateCheckoutEventHandler());
-        
-        hBoxExamRoomButtons.getChildren().addAll(btnPrepPatient, btnHold, btnInProgress, btnCheckout);
-        
-        return hBoxExamRoomButtons;
-    }
-
+    /************************************
+     * new patient event handler methods*
+     ************************************/
     public class CreateNewPatientEventHandler implements EventHandler<ActionEvent> {
 
         @Override
@@ -451,10 +485,11 @@ public class Main extends Application {
     	
 		try {
 			Stage primaryStage = new Stage();
+		    btnCloseNew = new Button("Close");
+		    btnSubmitNew = new Button("Submit");
 		    Pane grdRootPane = buildApplicationDisplay();
-		    
 		   
-		    btnSubmit.setOnAction(new EventHandler<ActionEvent>() {
+		    btnSubmitNew.setOnAction(new EventHandler<ActionEvent>() {
 	            @Override
 	            public void handle(ActionEvent event) {
 	            	if(primaryDataMissing()) {
@@ -509,15 +544,15 @@ public class Main extends Application {
 			
 	        });
 		    
-		    
-		    btnClose.setOnAction(new EventHandler<ActionEvent>() {
+		   
+		    btnCloseNew.setOnAction(new EventHandler<ActionEvent>() {
 	            @Override
 	            public void handle(ActionEvent event) {
 	                primaryStage.close();
 	            }
 	        });
 		    
-		    Scene scene = new Scene(grdRootPane, 900, 200);
+		    Scene scene = new Scene(grdRootPane,1600, 750);
 			scene.getStylesheets().add(getClass().getResource("new_application_stylesheet.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Application");
@@ -554,7 +589,6 @@ public class Main extends Application {
 		
 		if (sex == null) {
 			hasMissing = true;
-			hBoxSex.getStyleClass().add("-fx-border-color:#ff0000;");
 			rdFemale.getStyleClass().add("radio-button2");
 			rdMale.getStyleClass().add("radio-button2");
 			rdPreferNot.getStyleClass().add("radio-button2");
@@ -562,7 +596,6 @@ public class Main extends Application {
 		
 		if(marital == null){
 			hasMissing = true;
-			hBoxMarital.getStyleClass().add("-fx-border-color:#ff0000;");
 			rdSingle.getStyleClass().add("radio-button2");
 			rdMarried.getStyleClass().add("radio-button2");
 			rdDivorced.getStyleClass().add("radio-button2");
@@ -600,80 +633,82 @@ public class Main extends Application {
 	}
 
     private Pane buildApplicationDisplay() throws FileNotFoundException {
-    	// txfFirstName, txfLastName, txfAge, txfBirthdate, txfAddress
-    	// lblFirstName, lblLastName, lblAge, lblBirthdate, lblAddress
-    	// btnSubmit, btnClose
-    	
-    	// *******************make all gridpanes not hboxes**********************
-    	
-    	
-    	
+    	// Holds each row of the form
     	GridPane application = new GridPane();
     	
-    	VBox vBoxBody = new VBox();
+    	// Holds Azalea Health logo
+    	VBox vBoxLogo = new VBox();
 		InputStream stream = new FileInputStream("src\\ver1\\azalea_health.png");
 		Image imgAH = new Image(stream);
 		
-		vBoxBody.getStyleClass().add("-fx-padding:15px;");
-		vBoxBody.setAlignment(Pos.CENTER);
+		vBoxLogo.getStyleClass().add("-fx-padding:15px;");
+		vBoxLogo.setAlignment(Pos.CENTER);
 		
 		ImageView imgvwBody = new ImageView();
 		imgvwBody.setImage(imgAH);
-		imgvwBody.setFitHeight(vBoxBody.getWidth());
-		vBoxBody.getChildren().add(imgvwBody);
+		imgvwBody.setFitHeight(vBoxLogo.getWidth());
+		vBoxLogo.getChildren().add(imgvwBody);
     	
-    	VBox box1 = new VBox();
-    	box1.setSpacing(20);
-    	box1.getStyleClass().add("vbox");
+		// Holds patient information
+    	VBox vBoxPatientInformation = new VBox();
+    	vBoxPatientInformation.setSpacing(20);
+    	vBoxPatientInformation.getStyleClass().add("vbox");
     	
-    	VBox box2 = new VBox();
-    	box2.setSpacing(20);
-    	box2.getStyleClass().add("vbox");
+    	// Holds emergency contact information
+    	VBox vBoxEmergencyContact = new VBox();
+    	vBoxEmergencyContact.setSpacing(20);
+    	vBoxEmergencyContact.getStyleClass().add("vbox");
     	
-    	VBox box3 = new VBox();
-    	box3.getStyleClass().add("vbox");
-    	box3.setAlignment(Pos.CENTER);
+    	// Holds both patient and emergency contact info
+    	VBox vBoxInformationContainer = new VBox();
+    	vBoxInformationContainer.getStyleClass().add("vbox");
+    	vBoxInformationContainer.setAlignment(Pos.CENTER);
     	
+    	// Holds first name and last name data collectors (first row)
     	GridPane row1 = new GridPane();
     	row1.getStyleClass().add("-fx-background-color: #87cefa;");
     	row1.setHgap(15);
-    	
+    	// Holds b-day, age, sex, marital status data collectors (second row)
     	GridPane row2 = new GridPane();
     	row2.getStyleClass().add("-fx-background-color: #87cefa;");
     	row2.setHgap(15);
-    	
+    	// Holds address, city, state, and ssn data collectors (third row)
     	GridPane row3 = new GridPane();
     	row3.getStyleClass().add("-fx-background-color: #87cefa;");
     	row3.setHgap(15);
-    	
+    	// Holds Emergency Contact Label (fourth row)
     	GridPane row4 = new GridPane();
     	row4.getStyleClass().add("-fx-background-color: #87cefa;");
     	row4.setHgap(15);
-    	
+    	// Holds emergency contact name, phone, and relationship data collectors (fifth row)
     	GridPane row5 = new GridPane();
     	row5.getStyleClass().add("-fx-background-color: #87cefa;");
     	row5.setHgap(15);
     	
-    	hBoxMarital.setSpacing(10);
+    	// Holds Radio buttons for sex & marital selection
+    	HBox hBoxSex = new HBox();
     	hBoxSex.setSpacing(10);
-    	
+    	HBox hBoxMarital = new HBox();
+    	hBoxMarital.setSpacing(10);
+    
+    	// Holds submit and close buttons
     	HBox buttons = new HBox();
     	buttons.setSpacing(10);
     	
+    	/*------------------------
+    	 * Patient data variables
+    	 -------------------------*/
     	Label lblPatientInfo = new Label("PATIENT INFORMATION");
 
 		Label lblFirstName = new Label ("First Name:");
 		txfFirstName = new TextField();
-		
 		Label lblLastName = new Label("Last Name:");
 		txfLastName = new TextField();
-		
 		Label lblAge = new Label("Age:");
 		txfAge = new TextField();	
-		
 		Label lblBirthdate = new Label("Birthdate:");
 		txfBirthdate = new TextField("i.e. 07/30/2001");
-		
+		// clears txf once the mouse clicks it
 		txfBirthdate.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
 			@Override
@@ -686,9 +721,14 @@ public class Main extends Application {
 		
 		// gender radio buttons
 		Label lblSex = new Label("Sex:");
-		
 		rdFemale.setToggleGroup(tgrpSex);
 		rdFemale.getStyleClass().add("radio-button1");
+		rdMale.setToggleGroup(tgrpSex);
+		rdMale.getStyleClass().add("radio-button1");
+		rdPreferNot.setToggleGroup(tgrpSex);
+		rdPreferNot.getStyleClass().add("radio-button1");
+		
+		// If radio button is selected, store it to the sex variable
 		rdFemale.setOnAction(new EventHandler<ActionEvent>(){
 
 			@Override
@@ -698,8 +738,7 @@ public class Main extends Application {
 			}
 			
 		});
-		rdMale.setToggleGroup(tgrpSex);
-		rdMale.getStyleClass().add("radio-button1");
+		
 		rdMale.setOnAction(new EventHandler<ActionEvent>(){
 
 			@Override
@@ -709,9 +748,7 @@ public class Main extends Application {
 			}
 			
 		});
-		
-		rdPreferNot.setToggleGroup(tgrpSex);
-		
+
 		rdPreferNot.setOnAction(new EventHandler<ActionEvent>(){
 
 			@Override
@@ -721,12 +758,20 @@ public class Main extends Application {
 			}
 			
 		});
-		rdPreferNot.getStyleClass().add("radio-button1");
+		
 		
 		// marital radio buttons
 		Label lblMaritalStatus = new Label ("Marital Status:");
 		rdSingle.setToggleGroup(tgrpMarital);
-		rdSingle.getStyleClass().add("radio-button1");
+		rdSingle.getStyleClass().add("radio-button1");		
+		rdMarried.setToggleGroup(tgrpMarital);
+		rdMarried.getStyleClass().add("radio-button1");
+		rdDivorced.setToggleGroup(tgrpMarital);
+		rdDivorced.getStyleClass().add("radio-button1");
+		rdWidow.setToggleGroup(tgrpMarital);
+		rdWidow.getStyleClass().add("radio-button1");
+		
+		// If radio button selected, store in marital variable
 		rdSingle.setOnAction(new EventHandler<ActionEvent>(){
 
 			@Override
@@ -737,8 +782,6 @@ public class Main extends Application {
 			
 		});
 		
-		rdMarried.setToggleGroup(tgrpMarital);
-		rdMarried.getStyleClass().add("radio-button1");
 		rdMarried.setOnAction(new EventHandler<ActionEvent>(){
 
 			@Override
@@ -748,9 +791,7 @@ public class Main extends Application {
 			}
 			
 		});
-		
-		rdDivorced.setToggleGroup(tgrpMarital);
-		rdDivorced.getStyleClass().add("radio-button1");
+
 		rdDivorced.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -761,8 +802,6 @@ public class Main extends Application {
 			
 		});
 		
-		rdWidow.setToggleGroup(tgrpMarital);
-		rdWidow.getStyleClass().add("radio-button1");
 		rdWidow.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -773,50 +812,37 @@ public class Main extends Application {
 			
 		});
 		
-		
-		
 		Label lblAddress = new Label("Address:");
 		txfAddress = new TextField();	
-		
 		Label lblCity = new Label("City:");
 		txfCity = new TextField();
-		
 		Label lblState = new Label("State:");
 		txfState = new TextField();
-		
 		Label lblPhone = new Label("Phone:");
 		txfPatientPhone = new TextField();
-		
-		Text parenth1 = new Text("(");
-		parenth1.setFill(Color.GHOSTWHITE);
-		parenth1.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
-		Text parenth2 = new Text(")");
-		parenth2.setFill(Color.GHOSTWHITE);
-		parenth2.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
-		Text dash = new Text("-");
-		dash.setFill(Color.GHOSTWHITE);
-		dash.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
 		
 		Label lblSSN = new Label("SSN:");
 		txfSSN = new TextField();
 		
+		
+		/*-------------------------------
+		 * Emergency Contact Information
+		 --------------------------------*/
 		Label lblEmergencyContact = new Label("EMERGENCY CONTACT");
 		
 		Label lblEmergName = new Label("Name:");
 		txfEmergName = new TextField();
-		
 		Label lblEmergPhone = new Label("Phone:");
 		txfEmergPhone = new TextField();
-		
 		Label lblEmergRelationship = new Label("Relationship:");
 		txfEmergRelationship = new TextField();
 
-		btnSubmit = new Button("Submit");
-		btnSubmit.setAlignment(Pos.CENTER);
-		
-		btnClose = new Button("Close");
-		btnClose.setAlignment(Pos.CENTER);
+		// submit 
+		btnSubmitNew.setAlignment(Pos.CENTER);
+		// close
+		btnCloseNew.setAlignment(Pos.CENTER);
 
+		// add styling to textfields
 		txfFirstName.getStyleClass().add("text-field1");	
 		txfLastName.getStyleClass().add("text-field1");
 		txfAge.getStyleClass().add("text-field1");
@@ -873,18 +899,21 @@ public class Main extends Application {
 		row5.add(txfEmergRelationship, 10, 0);
 		
 		
-		box1.getChildren().addAll(vBoxBody, lblPatientInfo,row1, row2, row3);
-		box2.getChildren().addAll(row4, row5);
-		box3.getChildren().addAll(box1,box2);
-		buttons.getChildren().addAll(btnSubmit, btnClose);
-		application.add(box3, 0, 0);
+		vBoxPatientInformation.getChildren().addAll(vBoxLogo, lblPatientInfo,row1, row2, row3);
+		vBoxEmergencyContact.getChildren().addAll(row4, row5);
+		vBoxInformationContainer.getChildren().addAll(vBoxPatientInformation,vBoxEmergencyContact);
+		buttons.getChildren().addAll(btnSubmitNew, btnCloseNew);
+		application.add(vBoxInformationContainer, 0, 0);
 		application.add(buttons, 0, 1);
 		
 		numNewPatients++;
 		
 		return application;
 	}
-
+    /******************************************
+     *End of new Patient event handler methods*
+     ******************************************/
+    
     // Move Patient down in list (purpose of this process unknown)
 	public class CreateMoveUpEventHandler implements EventHandler<ActionEvent> {
 
@@ -936,8 +965,8 @@ public class Main extends Application {
 			try {
 				Stage primaryStage = new Stage();
 			    Pane grdRootPane = buildPreparationApplicationDisplay(p);
-			   
-			    btnSubmit.setOnAction(new EventHandler<ActionEvent>() {
+			    
+			    btnSubmitPrep.setOnAction(new EventHandler<ActionEvent>() {
 		            @Override
 		            public void handle(ActionEvent event) {
 		            	double height = Double.parseDouble(txfHeight.getText());
@@ -957,12 +986,12 @@ public class Main extends Application {
 		            	lvwWaitingPatients.getItems().remove(r.getPatient());
 		                lvwFreeRooms.getItems().remove(r);
 		            	
+		                
 		            	primaryStage.close();
 		            }
 		        });
 			    
-			    
-			    btnClose.setOnAction(new EventHandler<ActionEvent>() {
+			    btnClosePrep.setOnAction(new EventHandler<ActionEvent>() {
 		            @Override
 		            public void handle(ActionEvent event) {
 		                primaryStage.close();
@@ -1034,10 +1063,10 @@ public class Main extends Application {
 			
 			HBox buttons = new HBox();
 			
-			btnSubmit = new Button("Submit");
-			btnClose = new Button("Close");
+			btnSubmitPrep = new Button("Submit");
+			btnClosePrep = new Button("Close");
 			
-			buttons.getChildren().addAll(btnSubmit, btnClose);
+			buttons.getChildren().addAll(btnSubmitPrep, btnClosePrep);
 			midRow.getChildren().addAll(lblHeight, txfHeight, lblWeight, txfWeight, lblBPM, txfBPM);
 			bottomRow.getChildren().addAll(lblSystolicNum, txfSystolicNum, lblDiastolicNum, txfDiastolicNum);
 			
@@ -1059,20 +1088,42 @@ public class Main extends Application {
 		GridPane col1 = new GridPane();
 		GridPane col2 = new GridPane();
 		
+		GridPane row1 = new GridPane();
+		GridPane row2 = new GridPane();
+		GridPane row3 = new GridPane();
+		
+		Room room = azaleaHealth.getRoom(roomNumber);
+		
 		// check
 		System.out.println(roomNumber);
 		
-		VBox vBoxBody = new VBox();
-		InputStream stream = new FileInputStream("src\\ver1\\female.jpg");
-		Image imgFemale = new Image(stream);
 		
+		HBox hBoxExamRoomButtons = new HBox();
+    	hBoxExamRoomButtons.setSpacing(5);
+
+    	Button btnHold = new Button("Hold");
+        
+
+        Button btnInProgress = new Button("In-Progress");
+    
+        Button btnCheckout = new Button("CheckOut");
+        
+        
+        hBoxExamRoomButtons.getChildren().addAll(btnHold, btnInProgress, btnCheckout);
+        
 		
-		ImageView imgvwBody = new ImageView();
-		imgvwBody.setImage(imgFemale);
-		vBoxBody.getChildren().add(imgvwBody);
-		col1.getChildren().add(vBoxBody);
+		VBox vBoxLogo = new VBox();
+		InputStream stream = new FileInputStream("src\\ver1\\azalea_health_smaller.png");
+		Image imgAH = new Image(stream);
 		
-		Room room = azaleaHealth.getRoom(roomNumber);
+		vBoxLogo.getStyleClass().add("-fx-padding:15px;");
+		vBoxLogo.setAlignment(Pos.CENTER_RIGHT);
+		
+		ImageView imgvwLogo = new ImageView();
+		imgvwLogo.setImage(imgAH);
+		imgvwLogo.setFitHeight(vBoxLogo.getWidth());
+		vBoxLogo.getChildren().add(imgvwLogo);
+
 		
 		// needs to be able to set status
 		
@@ -1080,17 +1131,23 @@ public class Main extends Application {
 		Label lblName = new Label("Name: ");
 		Label lblAge = new Label("Age: ");
 		Label lblDOB = new Label("DOB: ");
+		Label lblSex = new Label("Sex:");
+		Label lblMarital = new Label("Marital Status:");
+		Label lblSSN = new Label("SSN:");
 		Label lblAddress = new Label("Address: ");
 		Label lblHeight = new Label("Height: ");
-		Label lblWeight = new Label("Weight");		
+		Label lblWeight = new Label("Weight: ");		
 		Label lblBPM = new Label("BPM: ");
 		Label lblBloodPressure = new Label("Blood Pressure: ");
 		Label lblRace = null;
-		Label lblSex = null;
-		Label lblState = null;
-		Label lblZip = null;
+		Label lblState = new Label("State: ");
+		Label lblCity = new Label("City: ");
 		Label lblIllnesses = null;
 		Label lblNotes = new Label("Notes: ");
+		
+		txaNotes.setEditable(true);
+		txaNotes.setPrefHeight(250);
+		txaNotes.setPrefWidth(450);
 		
 		
 		// Hold data
@@ -1110,68 +1167,137 @@ public class Main extends Application {
 		HBox hBoxLine5 = new HBox();
 		hBoxLine5.setSpacing(3);	
 		
-//		HBox hBoxLine6 = new HBox();
-//		hBoxLine6.setSpacing(3);
+		VBox vBoxLine6 = new VBox();
+		vBoxLine6.setSpacing(10);
 		
+		btnAddNote = new Button("Add Note");
+		btnAddNote.setAlignment(Pos.CENTER_RIGHT);
 		
 		
 		
 		if(room.isFree()) {
-			hBoxLine1.getChildren().addAll(lblStatus);
-			hBoxLine2.getChildren().addAll(lblName,lblAge,lblDOB);
-//			hBoxLine3.getChildren().addAll(lblRace, lblSex);
-			hBoxLine4.getChildren().addAll(lblAddress);
-			hBoxLine5.getChildren().addAll(lblHeight, lblWeight, lblBPM, lblBloodPressure);
-//			hBoxLine6.getChildren().addAll(lblIllnesses);
+			Pane pnFree = new Pane();
+			pnFree.setPrefSize(900, 675);
+			
+			VBox vBoxFreeRoom = new VBox();
+			vBoxFreeRoom.setPrefSize(900, 675);
+			vBoxFreeRoom.setAlignment(Pos.CENTER);
+			Label lblRoomEmpty = new Label("ROOM IS EMPTY");
+			Text txtPreparePatient = new Text("Please prepare a patient from the waiting room.");
+			txtPreparePatient.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 18));
+			lblRoomEmpty.setAlignment(Pos.CENTER);
+			vBoxFreeRoom.getChildren().addAll(lblRoomEmpty, txtPreparePatient);
+			root.add(vBoxLogo, 2, 1);
+			root.add(vBoxFreeRoom, 1, 1);
 			
 		}else {
-			Text txtStatus = new Text(room.getPatient().getStatus()+"");
-
-			Text txtName = new Text(room.getPatient().getFirstName() + " " + room.getPatient().getLastName());
-
-			Text txtAge = new Text(room.getPatient().getAge()+"");
-
+			
+			// column 1 contents
+			if(room.getPatient().getSex().equals("Female")) {
+				VBox vBoxBody = new VBox();
+				InputStream str = new FileInputStream("src\\ver1\\female.jpg");
+				Image imgFemale = new Image(str);
+				ImageView imgvwBody = new ImageView();
+				
+				imgvwBody.setImage(imgFemale);
+				vBoxBody.getStyleClass().add("vbox");
+				vBoxBody.getChildren().add(imgvwBody);
+				
+				col1.getChildren().add(vBoxBody);
+			}else if(room.getPatient().getSex().equals("Male")) {
+				VBox vBoxBody = new VBox();
+				InputStream str = new FileInputStream("src\\ver1\\male.jpg");
+				Image imgMale = new Image(str);
+				ImageView imgvwBody = new ImageView();
+				
+				imgvwBody.setImage(imgMale);
+				vBoxBody.getStyleClass().add("vbox");
+				vBoxBody.getChildren().add(imgvwBody);
+				vBoxBody.setAlignment(Pos.CENTER);
+				col1.getChildren().add(vBoxBody);
+			}
+			
+			txtStatus = new Text(room.getPatient().getStatus()+" ");
+			txtStatus.setText(txtStatus.getText().toUpperCase());
+			txtStatus.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+			
+			Text txtName = new Text(room.getPatient().getFirstName() + " " + room.getPatient().getLastName() + "  ");
+			txtName.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+			
+			
+			Text txtAge = new Text(room.getPatient().getAge()+"  ");
+			txtAge.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+			
 			Text txtDOB = new Text(room.getPatient().getBirthdate().getMonthValue() + "/ "
 								+ room.getPatient().getBirthdate().getDayOfMonth() + "/ "
-								+room.getPatient().getBirthdate().getYear());
+								+room.getPatient().getBirthdate().getYear() + "  ");
+			txtDOB.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
 			
-			Text txtSex = null;
+			Text txtSex = new Text(room.getPatient().getSex() + "  ");
+			txtSex.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+			
+			Text txtmarital = new Text(room.getPatient().getMaritalStatus() + "  ");
+			txtmarital.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
 			
 			Text txtRace = null;
+//			txtRace.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
 			
-			Text txtAddress = new Text(room.getPatient().getAddress());
+			Text txtAddress = new Text(room.getPatient().getAddress() + "  ");
+			txtAddress.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
 			
-			Text txtState = null;
+			Text txtState = new Text(room.getPatient().getState() + "  ");
+			txtState.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
 			
-			Text txtZip = null;
+			Text txtCity = new Text(room.getPatient().getCity() + "  ");
+			txtCity.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
 			
-			Text txtHeight = new Text(room.getPatient().getHeight() + "");
+			Text txtHeight = new Text(room.getPatient().getHeight() + "  ");
+			txtHeight.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
 			
-			Text txtWeight = new Text(room.getPatient().getWeight()+"");
+			Text txtWeight = new Text(room.getPatient().getWeight()+"  ");
+			txtWeight.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
 			
-			Text txtBPM = new Text(room.getPatient().getHeartRate()+"");
+			Text txtBPM = new Text(room.getPatient().getHeartRate()+"  ");
+			txtBPM.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
 			
-			Text txtBloodPressure = new Text(room.getPatient().getBloodPressure());
-		
+			Text txtBloodPressure = new Text(room.getPatient().getBloodPressure() + "  ");
+			txtBloodPressure.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+			
+			
 			Text txtIllnesses = null;
+//			txtIllnesses.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+//			txtIllnesses.setFill(Color.DARKCYAN);
 			
 			hBoxLine1.getChildren().addAll(lblStatus, txtStatus);
-			hBoxLine2.getChildren().addAll(lblName, txtName, lblAge, txtAge, lblDOB, txtDOB);
-//			hBoxLine3.getChildren().addAll(lblRace, txtRace, lblSex, txtSex);
-			hBoxLine4.getChildren().addAll(lblAddress, txtAddress);
+			hBoxLine2.getChildren().addAll(lblName, txtName, lblAge, txtAge, lblDOB, txtDOB, lblSex, txtSex);
+			hBoxLine3.getChildren().addAll(lblMarital, txtmarital);
+			hBoxLine4.getChildren().addAll(lblAddress, txtAddress, lblCity, txtCity, lblState, txtState);
 			hBoxLine5.getChildren().addAll(lblHeight, txtHeight, lblWeight, txtWeight, lblBPM, txtBPM, lblBloodPressure, txtBloodPressure);
-//			hBoxLine6.getChildren().addAll(lblIllnesses, txtIllnesses);
+			vBoxLine6.getChildren().addAll(lblNotes, txaNotes, btnAddNote);
+		
+			col1.setVgap(10);
+			col1.add(hBoxExamRoomButtons, 0, 1);
+			
+			
+			col2.setVgap(20);
+			col2.add(hBoxLine1, 0, 0);
+			col2.add(hBoxLine2, 0, 1);
+			col2.add(hBoxLine3, 0, 2);
+			col2.add(hBoxLine4, 0, 3);
+			col2.add(hBoxLine5, 0, 4);
+			col2.add(vBoxLine6, 0, 5);
+//			col2.add(btnAddNote, 0, 6);
+		
+			root.setHgap(20);
+			root.add(col1, 0, 0);
+			root.add(col2, 1, 0);
+			root.add(vBoxLogo, 2, 0);
+		
 		}
-
-		col2.add(hBoxLine1, 0, 0);
-		col2.add(hBoxLine2, 0, 1);
-//		col2.add(hBoxLine3, 0, 2);
-		col2.add(hBoxLine4, 0, 3);
-		col2.add(hBoxLine5, 0, 4);
-//		col2.add(hBoxLine6, 0, 5);
-
-		root.add(col1, 0, 0);
-		root.add(col2, 1, 0);
+		
+		
+		
+		
 		
 		
 		try {
@@ -1179,51 +1305,86 @@ public class Main extends Application {
 		    Pane grdRootPane = root;
 
 		    
-		    Scene scene = new Scene(grdRootPane, 600, 400);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		    Scene scene = new Scene(grdRootPane, 1600, 675);
+			scene.getStylesheets().add(getClass().getResource("room_data_stylesheet.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Room");
 			primaryStage.show();
+			
+		    btnInProgress.setOnAction(new EventHandler<ActionEvent> () {
+
+	            @Override
+	            public void handle(ActionEvent arg0) {
+	            	azaleaHealth.getRoom(roomNumber).getPatient().setStatus(PatientStatus.IN_PROGRESS);
+	            	txtStatus.setText(azaleaHealth.getRoom(roomNumber).getPatient().getStatus()+"");
+	            }
+	        });
+
+			
+			btnHold.setOnAction(new EventHandler<ActionEvent>() {
+	        	   // Hold Event Handler
+	                @Override
+	                public void handle(ActionEvent arg0) {
+	                	azaleaHealth.getRoom(roomNumber).getPatient().setStatus(PatientStatus.ON_HOLD);
+	                	txtStatus.setText(azaleaHealth.getRoom(roomNumber).getPatient().getStatus()+"");
+	                }
+	        });
+			
+			btnCheckout.setOnAction(new EventHandler<ActionEvent>() {
+
+				@Override
+				public void handle(ActionEvent arg0) {
+					azaleaHealth.getRoom(roomNumber).getPatient().setStatus(PatientStatus.ON_HOLD);
+	            	azaleaHealth.getRoom(roomNumber).removePatient();
+	            	lvwFreeRooms.getItems().add(azaleaHealth.getRoom(roomNumber));
+	            	primaryStage.close();
+				}
+	        	
+	        });
+			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		
-		
+	}
+    
+    public HBox buildExamRoomButtons(int roomNumber) {
+    	HBox hBoxExamRoomButtons = new HBox();
+    	hBoxExamRoomButtons.setSpacing(5);
+
+        btnHold = new Button("Hold");
+        btnHold.setOnAction(new EventHandler<ActionEvent>() {
+        	   // Hold Event Handler
+                @Override
+                public void handle(ActionEvent arg0) {
+                	azaleaHealth.getRoom(roomNumber).getPatient().setStatus(PatientStatus.ON_HOLD);
+                	txtStatus.setText(azaleaHealth.getRoom(roomNumber).getPatient().getStatus()+"");
+                }
+        });
+
+        btnInProgress = new Button("In-Progress");
+        btnInProgress.setOnAction(new EventHandler<ActionEvent> () {
+
+            @Override
+            public void handle(ActionEvent arg0) {
+            	azaleaHealth.getRoom(roomNumber).getPatient().setStatus(PatientStatus.IN_PROGRESS);
+            	txtStatus.setText(azaleaHealth.getRoom(roomNumber).getPatient().getStatus()+"");
+            }
+        });
+
+        btnCheckout = new Button("CheckOut");
+        
+        
+        hBoxExamRoomButtons.getChildren().addAll(btnHold, btnInProgress, btnCheckout);
+        
+        return hBoxExamRoomButtons;
+    }
+
+    protected void clearRoom(String roomNumber) {
 		
 		
 	}
 
-    // Hold Event Handler
-	public class CreateHoldEventHandler implements EventHandler<ActionEvent> {
-
-        @Override
-        public void handle(ActionEvent arg0) {
-            Room roomSel = lvwSortedRooms.getSelectionModel().getSelectedItem();
-            int roomSelected = lvwSortedRooms.getSelectionModel().getSelectedIndex();
-            roomSel.getPatient().setStatus(PatientStatus.ON_HOLD);
-
-            lvwSortedRooms.getItems().remove(roomSelected);
-            lvwSortedRooms.getItems().add(roomSel);
-
-        }
-
-    }
-	// In progress Event Handler
-    public class CreateInProgressEventHandler implements EventHandler<ActionEvent> {
-
-        @Override
-        public void handle(ActionEvent arg0) {
-            Room roomSel = lvwSortedRooms.getSelectionModel().getSelectedItem();
-            int roomSelected = lvwSortedRooms.getSelectionModel().getSelectedIndex();
-            roomSel.getPatient().setStatus(PatientStatus.IN_PROGRESS);
-
-            lvwSortedRooms.getItems().remove(roomSelected);
-            lvwSortedRooms.getItems().add(roomSel);
-
-        }
-
-    }
-    // check out event handler
+	// check out event handler
     public class CreateCheckoutEventHandler implements EventHandler<ActionEvent> {
 
         @Override
@@ -1234,7 +1395,7 @@ public class Main extends Application {
 
             lvwSortedRooms.getItems().remove(roomSelected);
             Patient pat = roomSel.removePatient();
-            lvwCheckedout.getItems().add(pat);
+            lvwPatients.getItems().add(pat);
             lvwFreeRooms.getItems().add(roomSel);
 
         }
@@ -1258,6 +1419,9 @@ public class Main extends Application {
         azaleaHealth.addRoom(100);
         azaleaHealth.addRoom(101);
         azaleaHealth.addRoom(102);
+        azaleaHealth.addRoom(103);
+        azaleaHealth.addRoom(104);
+        azaleaHealth.addRoom(105);
         for(Patient p: azaleaHealth.getPatients()) {
         	if(p.getId()==101) {
         		p.setFirstName("Jasmine");
@@ -1265,6 +1429,11 @@ public class Main extends Application {
         		p.setAge(21);
         		p.setAddress("1213 South Highway 129");
         		p.setBirthdate(LocalDate.parse("2001-07-04"));
+        		p.setSex("Male");
+        		p.setState("GA");
+        		p.setCity("Stockton");
+        		p.setSSN("xxx-xx-2486");
+        		p.setMaritalStatus("Single");
         	}
         }
         
@@ -1292,3 +1461,14 @@ public class Main extends Application {
     }
   
 }
+//    private VBox buildListOfSortedRooms() {
+//        lvwSortedRooms.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+//        lvwSortedRooms.setPrefHeight(200);
+//        lvwSortedRooms.setPrefWidth(350);
+//
+//        VBox display = new VBox();
+//        display.getStyleClass().add("list");
+//        display.getChildren().add(lvwSortedRooms);
+//
+//        return display;
+//    }
