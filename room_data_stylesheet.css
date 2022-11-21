@@ -1,0 +1,52 @@
+.root{
+	-fx-background-color: #f0f8ff;
+	-fx-padding: 45px;
+}
+
+.label{
+	-fx-font-family:Verdana;
+	-fx-font-size:50px;
+	-fx-text-fill:#0177bc;
+}
+.vbox {
+	-fx-padding:2px;
+	-fx-border-color:#addbf5;
+}
+
+.h-box{
+	-fx-spacing:55px;
+	-fx-text-fill:#0177bc;
+}
+
+.text-field1{
+	-fx-control-inner-background: #ffffff00;
+	-fx-background-color: #ffffff00;
+	-fx-border-color:#0177bc;
+	-fx-min-height:25px;
+	-fx-text-fill:#0177bc;
+	-fx-font-size:15px;
+}
+
+.text-field2{
+	-fx-control-inner-background: #ffffff00;
+	-fx-background-color: #ffffff00;
+	-fx-border-color:#ff0000;
+	-fx-min-height:25px;
+	-fx-text-fill:#0177bc;
+	-fx-font-size:15px;
+}
+
+.text{
+	-fx-text-fill:#0177bc;
+	-fx-font-size:15px;
+}
+
+.button{
+	-fx-background-color:#0177bc;
+	-fx-font-family:"Verdana";
+	-fx-text-fill:#d4ecfa;
+	-fx-font-size:14px;
+	-fx-padding:10px;
+}
+
+
