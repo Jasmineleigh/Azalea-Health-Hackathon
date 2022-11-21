@@ -13,10 +13,19 @@
 	-fx-border-color:#addbf5;
 }
 
-.text-field{
+.text-field1{
 	-fx-control-inner-background: #ffffff00;
 	-fx-background-color: #ffffff00;
 	-fx-border-color:#0177bc;
+	-fx-min-height:25px;
+	-fx-text-fill:#0177bc;
+	-fx-font-size:15px;
+}
+
+.text-field2{
+	-fx-control-inner-background: #ffffff00;
+	-fx-background-color: #ffffff00;
+	-fx-border-color:#ff0000;
 	-fx-min-height:25px;
 	-fx-text-fill:#0177bc;
 	-fx-font-size:15px;
@@ -27,8 +36,17 @@
 	-fx-font-size:15px;
 }
 
-.radio-button{
+.radio-button1{
 	-fx-padding:3px;
 	-fx-font-size:14px;
 	-fx-text-fill:#0177bc;
 }
+
+.radio-button2{
+	-fx-padding:3px;
+	-fx-font-size:14px;
+	-fx-text-fill:#0177bc;
+	-fx-border-color:#ff0000;
+}
+
+
