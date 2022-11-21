@@ -468,11 +468,24 @@ public class Main extends Application {
 		            	azaleaHealth.getPatient(patientID).setCity(txfCity.getText());
 		            	azaleaHealth.getPatient(patientID).setState(txfState.getText());
 		            	azaleaHealth.getPatient(patientID).setAge(Integer.parseInt(txfAge.getText()));
-		            	azaleaHealth.getPatient(patientID).setBirthdate(LocalDate.parse(txfBirthdate.getText()));
+		            	
+		            	String month = txfBirthdate.getText().substring(0,2);
+		            	String day = txfBirthdate.getText().substring(3,5);
+		            	String year = txfBirthdate.getText().substring(6);
+		            	
+		            	azaleaHealth.getPatient(patientID).setBirthdate(LocalDate.parse(year+"-"+month+"-"+day));
 		            	azaleaHealth.getPatient(patientID).setPhone(txfPatientPhone.getText());
 		            	azaleaHealth.getPatient(patientID).setSex(sex);
 		            	azaleaHealth.getPatient(patientID).setMaritalStatus(marital);
 		            	azaleaHealth.getPatient(patientID).setSSN(txfSSN.getText());
+		            	
+		            	rdFemale.setSelected(false);
+		            	rdMale.setSelected(false);
+		            	rdPreferNot.setSelected(false);
+		            	rdSingle.setSelected(false);
+		            	rdMarried.setSelected(false);
+		            	rdDivorced.setSelected(false);
+		            	rdWidow.setSelected(false);
 		            	
 		            	if(!txfEmergName.getText().isEmpty() && 
 		            		!txfEmergPhone.getText().isEmpty() && 
@@ -607,8 +620,6 @@ public class Main extends Application {
 		ImageView imgvwBody = new ImageView();
 		imgvwBody.setImage(imgAH);
 		imgvwBody.setFitHeight(vBoxBody.getWidth());
-		// iv.setFitHeight(textSize);
-		// iv.setScaleY(iconSize/textSize);
 		vBoxBody.getChildren().add(imgvwBody);
     	
     	VBox box1 = new VBox();
@@ -661,7 +672,17 @@ public class Main extends Application {
 		txfAge = new TextField();	
 		
 		Label lblBirthdate = new Label("Birthdate:");
-		txfBirthdate = new TextField();
+		txfBirthdate = new TextField("i.e. 07/30/2001");
+		
+		txfBirthdate.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent arg0) {
+				txfBirthdate.clear();
+				
+			}
+			
+		});
 		
 		// gender radio buttons
 		Label lblSex = new Label("Sex:");
