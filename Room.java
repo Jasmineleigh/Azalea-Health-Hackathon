@@ -1,13 +1,14 @@
 package ver1;
 
 /*
- * In the original project, this was written by Chase Vaugn
+ * In the original project, this was written by Chase Vaughn
  * and Lucas Keasbey collaboratively
  */
 
 public class Room implements Comparable<Room> {
     private int roomNumber;
     private Patient p = null;
+    private Boolean hasPatient = false;
 
     public Room(int roomNumber) {
         this.roomNumber = roomNumber;
@@ -16,6 +17,7 @@ public class Room implements Comparable<Room> {
     public boolean addPatient(Patient readyPatient) {
         if(isFree()) {
             p = readyPatient;
+            hasPatient = true;
             return true;
         }
         return false;
