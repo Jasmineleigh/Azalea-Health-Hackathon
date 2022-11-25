@@ -155,7 +155,9 @@ public class Main extends Application {
                     	//add a separate window to display data 
                     	try {
 							lvwPatients.getSelectionModel().getSelectedItem().buildPatientDataDisplay();
-						} catch (FileNotFoundException e) {
+							if(lvwPatients.getSelectionModel().getSelectedItem().getStatus() == PatientStatus.CHECKED_OUT)
+								showCheckInScreen(lvwPatients.getSelectionModel().getSelectedItem());
+                    	} catch (FileNotFoundException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
@@ -238,7 +240,7 @@ public class Main extends Application {
 
     // Waiting patients display
     private VBox buildListOfWaitingPatients() {
-        lvwWaitingPatients.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        lvwWaitingPatients.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         lvwWaitingPatients.setPrefHeight(300);
         lvwWaitingPatients.setPrefWidth(300);
 
@@ -850,8 +852,8 @@ public class Main extends Application {
 		            }
 		        });
 			    
-			    Scene scene = new Scene(grdRootPane, 600, 400);
-				scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			    Scene scene = new Scene(grdRootPane, 1000, 400);
+				scene.getStylesheets().add(getClass().getResource("prepare_patient.css").toExternalForm());
 				primaryStage.setScene(scene);
 				primaryStage.setTitle("Application");
 				primaryStage.show();
@@ -868,9 +870,13 @@ public class Main extends Application {
 
 	    	GridPane application = new GridPane();
 	    	HBox midRow = new HBox();
+	    	midRow.setSpacing(10);
 	    	HBox bottomRow = new HBox();
+	    	bottomRow.setSpacing(10);
 	    	HBox topRow = new HBox();
+	    	topRow.setSpacing(10);
 	    	HBox secRow = new HBox();
+	    	secRow.setSpacing(10);
 	    	
 	    	lblFirstName = new Label ("First Name");
 		
@@ -885,32 +891,26 @@ public class Main extends Application {
 	    	String first = azaleaHealth.getPatient(p).getFirstName();
 	    	String last = azaleaHealth.getPatient(p).getLastName();
 	    	int age = azaleaHealth.getPatient(p).getAge();
-	    	String birthdate = azaleaHealth.getPatient(p).getBirthdate().toString();
-	    	String address = azaleaHealth.getPatient(p).getAddress();
 	    	
 	    	Label lblFirst = new Label(": "+first+"\t\t");
 	    	Label lblLast = new Label(": "+last+"\t");
 	    	Label lblAg = new Label(": "+age+"\t");
-	    	Label lblBDay = new Label(": "+birthdate+"\t");
-	    	Label lblAddr = new Label(": "+address+"\t");
 	    	
 	    	topRow.getChildren().addAll(lblFirstName, lblFirst, lblLastName, lblLast, lblAge, lblAg);
-	    
-			secRow.getChildren().addAll(lblBirthdate, lblBDay, lblAddress, lblAddr);
 			
-			lblHeight = new Label ("Height");
+			lblHeight = new Label ("Height:");
 			txfHeight = new TextField();
 			
-			lblWeight = new Label("Weight");
+			lblWeight = new Label("   Weight:");
 			txfWeight = new TextField();
 			
-			lblBPM = new Label("BPM");
+			lblBPM = new Label("   BPM:");
 			txfBPM = new TextField();
 			
-			lblSystolicNum = new Label("Systolic Number");
+			lblSystolicNum = new Label("Systolic Number:");
 			txfSystolicNum = new TextField();
 			
-			lblDiastolicNum = new Label("Diastolic Number");
+			lblDiastolicNum = new Label("   Diastolic Number:");
 			txfDiastolicNum = new TextField();
 			
 			HBox buttons = new HBox();
@@ -923,10 +923,9 @@ public class Main extends Application {
 			bottomRow.getChildren().addAll(lblSystolicNum, txfSystolicNum, lblDiastolicNum, txfDiastolicNum);
 			
 			application.add(topRow, 0, 0);
-			application.add(secRow, 0, 1);
-			application.add(midRow, 0, 2);
-			application.add(bottomRow, 0, 3);
-			application.add(buttons, 0, 4);
+			application.add(midRow, 0, 1);
+			application.add(bottomRow, 0, 2);
+			application.add(buttons, 0, 3);
 			
 			return application;
 		}
@@ -1029,5 +1028,55 @@ public class Main extends Application {
 		}
 		
     }
+    
+    // fix formatting
+    public void showCheckInScreen(Patient p) {
+    	try {
+			Stage primaryStage = new Stage();
+		    GridPane grdRootPane = new GridPane();
+		    
+		    HBox hBoxButtons = new HBox();
+		    String msg = "Would you like to\n   check-in this \n    patient?\n\n";
+		    
+		    Label lblCheckIn = new Label(msg);
+		    Button btnYes = new Button("Yes");
+		    Button btnNo = new Button("No");
+		    
+		    btnYes.setOnAction(new EventHandler<ActionEvent>() {
+
+				@Override
+				public void handle(ActionEvent arg0) {
+					p.setStatus(PatientStatus.WAITING);
+					lvwWaitingPatients.getItems().add(p);
+					primaryStage.close();
+					
+				}
+		    	
+		    });
+		    
+		    btnNo.setOnAction(new EventHandler<ActionEvent>() {
+
+				@Override
+				public void handle(ActionEvent arg0) {
+					primaryStage.close();
+				}
+		    	
+		    });
+		    hBoxButtons.getChildren().addAll(btnYes, btnNo);
+		    
+		    grdRootPane.add(lblCheckIn, 0, 0);
+		    grdRootPane.add(hBoxButtons, 0, 1);
+		    
+		    Scene scene = new Scene(grdRootPane, 400, 300);
+			scene.getStylesheets().add(getClass().getResource("new_application_stylesheet.css").toExternalForm());
+			primaryStage.setScene(scene);
+			primaryStage.setTitle("Application");
+			primaryStage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+    }
   
 }
+//  
