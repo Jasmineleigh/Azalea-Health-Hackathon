@@ -969,44 +969,44 @@ public class Main extends Application {
         
         for(Patient p: azaleaHealth.getPatients()) {
         	if(p.getId()==101) {
-        		p.setFirstName("Jasmine");
-        		p.setLastName("Merritt");
+        		p.setFirstName("Jasee");
+        		p.setLastName("Merth");
         		p.setAge(21);
-        		p.setAddress("1213 South Highway 129");
-        		p.setBirthdate(LocalDate.parse("2001-07-04"));
+        		p.setAddress("213 South Highway 129");
+        		p.setBirthdate(LocalDate.parse("2015-07-04"));
         		p.setSex("Female");
-        		p.setState("GA");
+        		p.setState("CA");
         		p.setCity("Stockton");
-        		p.setSSN("xxx-xx-2486");
+        		p.setSSN("xxx-xx-0000");
         		p.setMaritalStatus("Single");
         	}
         	if(p.getId()==100) {
-        		p.setFirstName("Kaia");
-        		p.setLastName("Merritt");
+        		p.setFirstName("Kay");
+        		p.setLastName("Merth");
         		p.setAge(16);
-        		p.setAddress("1213 South Highway 129");
-        		p.setBirthdate(LocalDate.parse("2006-01-05"));
+        		p.setAddress("123 South Highway 129");
+        		p.setBirthdate(LocalDate.parse("2016-11-05"));
         		p.setSex("Female");
-        		p.setState("GA");
+        		p.setState("CA");
         		p.setCity("Stockton");
-        		p.setSSN("xxx-xx-2486");
+        		p.setSSN("xxx-xx-0000");
         		p.setMaritalStatus("Single");
         	}
         	if(p.getId()==102) {
-        		p.setFirstName("Bruce");
-        		p.setLastName("Merritt");
+        		p.setFirstName("Brock");
+        		p.setLastName("Merth");
         		p.setAge(52);
-        		p.setAddress("1213 South Highway 129");
-        		p.setBirthdate(LocalDate.parse("1970-03-08"));
+        		p.setAddress("113 South Highway 129");
+        		p.setBirthdate(LocalDate.parse("1980-09-08"));
         		p.setSex("Male");
-        		p.setState("GA");
+        		p.setState("CA");
         		p.setCity("Stockton");
-        		p.setSSN("xxx-xx-2486");
+        		p.setSSN("xxx-xx-0000");
         		p.setMaritalStatus("Married");
         	}
         }
         
-        EmergencyContact ec = new EmergencyContact("Marva Merritt", "9123815383","Mother");
+        EmergencyContact ec = new EmergencyContact("Martha Merth", "5555555555","Mother");
         System.out.println(ec);
         return azaleaHealth;
     }
